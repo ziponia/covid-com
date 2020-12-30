@@ -2,8 +2,9 @@ import React from "react"
 import { Button, Layout, PageHeader, Table } from "antd"
 import { ColumnsType } from "antd/lib/table"
 import { BsPencil } from "react-icons/bs"
+import Link from "next/link"
 
-import { AppPageProps } from "../../next-env"
+import { AppPageProps } from "../_app.interface"
 
 interface Board {
   idx: number
@@ -64,9 +65,11 @@ const IndexPage: AppPageProps<Props> = (props) => {
         subTitle={pageSubTitle}
         style={{ paddingTop: 0 }}
         extra={
-          <Button icon={<BsPencil />} type="primary">
-            글쓰기
-          </Button>
+          <Link href="/post/create">
+            <Button icon={<BsPencil />} type="primary">
+              글쓰기
+            </Button>
+          </Link>
         }
       />
       <Table<Board>

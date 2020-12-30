@@ -1,5 +1,5 @@
 import React from "react"
-import { AppPageProps } from "../../../next-env"
+import { AppPageProps } from "../../_app.interface"
 
 type Props = {}
 

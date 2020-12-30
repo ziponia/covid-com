@@ -7,6 +7,7 @@ import {
 import { AppProps } from "next/dist/next-server/lib/router/router"
 import { RecoilRoot } from "recoil"
 import { Provider as AuthProvider } from "next-auth/client"
+import { defaultAppProps } from "../_app.interface"
 
 import PageLayout from "../templates/PageLayout"
 
@@ -26,6 +27,19 @@ const App: NextComponentType<AppContextType, AppInitialProps, AppProps> = ({
       </AuthProvider>
     </RecoilRoot>
   )
+}
+
+App.getInitialProps = async ({ Component, ctx }) => {
+  let pageProps = defaultAppProps
+
+  if (Component.getInitialProps) {
+    pageProps = {
+      ...pageProps,
+      ...(await Component.getInitialProps(ctx)),
+    }
+  }
+
+  return { pageProps }
 }
 
 export default App

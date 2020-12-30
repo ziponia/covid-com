@@ -1,6 +1,6 @@
 import React from "react"
 import { providers, signIn } from "next-auth/client"
-import { AppPageProps } from "../../../next-env"
+import { AppPageProps } from "../../_app.interface"
 
 type Props = {}
 
