@@ -10,24 +10,26 @@ import { AppLayoutProps } from "../_app.interface"
 type Props = AppLayoutProps & {}
 
 const PageLayout: React.FC<Props> = (props) => {
-  const { children, pageTitle, pageSubTitle, sidebar } = props
-  console.log(props)
+  const { children, pageTitle, pageSubTitle, sidebar, header } = props
+
   return (
     <Layout className="app-layout">
-      <Layout.Header className="app-header">
-        <Link href="/">
-          <a className="logo" href="/">
-            코로나 커뮤니티
-          </a>
-        </Link>
-        <span style={{ flex: 1 }} />
+      {header && (
+        <Layout.Header className="app-header">
+          <Link href="/">
+            <a className="logo" href="/">
+              코로나 커뮤니티
+            </a>
+          </Link>
+          <span style={{ flex: 1 }} />
 
-        <Button type="link" onClick={() => signIn()}>
-          <Tooltip title="Sign-in">
-            <FiPower />
-          </Tooltip>
-        </Button>
-      </Layout.Header>
+          <Button type="link" onClick={() => signIn()}>
+            <Tooltip title="Sign-in">
+              <FiPower />
+            </Tooltip>
+          </Button>
+        </Layout.Header>
+      )}
       <Layout.Content className="__main" style={{ padding: "0 50px" }}>
         {/* <Breadcrumb style={{ margin: "16px 0" }}>
           <Breadcrumb.Item>Home</Breadcrumb.Item>

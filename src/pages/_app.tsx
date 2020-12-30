@@ -18,12 +18,14 @@ const App: NextComponentType<AppContextType, AppInitialProps, AppProps> = ({
   Component,
   pageProps,
 }: any) => {
+  const Layout = Component.Layout ? Component.Layout : PageLayout
+  console.log("pageProps", pageProps)
   return (
     <RecoilRoot>
       <AuthProvider session={pageProps.session}>
-        <PageLayout {...pageProps}>
+        <Layout {...pageProps}>
           <Component {...pageProps} />
-        </PageLayout>
+        </Layout>
       </AuthProvider>
     </RecoilRoot>
   )

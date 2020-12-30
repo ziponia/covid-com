@@ -1,19 +1,10 @@
 import React from "react"
 import { providers, signIn } from "next-auth/client"
-import {
-  Card,
-  Form,
-  Input,
-  Button,
-  Checkbox,
-  Col,
-  Row,
-  Layout,
-  Image,
-} from "antd"
+import { Card, Form, Input, Button, Checkbox, Col, Row } from "antd"
 import { UserOutlined, LockOutlined, BorderOutlined } from "@ant-design/icons"
 import "antd/dist/antd.css"
 import { AppPageProps } from "../../_app.interface"
+import SignPageTemplate from "../../templates/SignPageTemplate"
 
 type Props = {}
 
@@ -21,7 +12,7 @@ const SignIn: AppPageProps<Props> = (props) => {
   const { providers } = props
   console.log(providers)
   return (
-    <Row style={{ height: "85vh" }}>
+    <Row style={{ flex: 1 }}>
       <Col span={12}>
         <Card
           title="LOGIN PAGE"
@@ -106,10 +97,13 @@ const SignIn: AppPageProps<Props> = (props) => {
   )
 }
 
+SignIn.Layout = SignPageTemplate
+
 SignIn.getInitialProps = async (context) => {
   return {
     // @ts-ignore
     providers: await providers(),
+    sidebar: false,
   }
 }
 
