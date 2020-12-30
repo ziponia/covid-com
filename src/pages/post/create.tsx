@@ -1,7 +1,7 @@
 import React from "react"
-import { Button, Input } from "antd"
+import { Button, Input, Tooltip } from "antd"
 import styled from "styled-components"
-import { FiArrowLeft } from "react-icons/fi"
+import { FiArrowLeft, FiCheck } from "react-icons/fi"
 import Editor from "../../components/Editor"
 import { AppPageProps } from "../../_app.interface"
 
@@ -15,12 +15,15 @@ const StyledContainer = styled.div`
 
   .action-block {
     display: flex;
-    height: 80px;
     align-items: center;
+    height: 80px;
   }
 
   .location-back-icon {
-    height: 100%;
+    svg {
+      height: 100%;
+      width: 100%;
+    }
   }
 `
 type Props = {}
@@ -29,10 +32,25 @@ const PostCreatePage: AppPageProps<Props> = (props) => {
   return (
     <StyledContainer>
       <div className="action-block">
-        <Button
-          type="link"
-          icon={<FiArrowLeft className="location-back-icon" />}
-        />
+        <Tooltip title="뒤로가기">
+          <Button
+            type="link"
+            shape="circle"
+            size="large"
+            className="location-back-icon"
+            icon={<FiArrowLeft />}
+          />
+        </Tooltip>
+        <span style={{ flex: 1 }} />
+        <Tooltip title="완료">
+          <Button
+            type="ghost"
+            shape="circle"
+            size="large"
+            className="location-back-icon"
+            icon={<FiCheck />}
+          />
+        </Tooltip>
       </div>
       <Input size="large" className="post-create-title" />
       <Editor />
