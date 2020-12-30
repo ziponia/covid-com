@@ -6,6 +6,7 @@ import {
 } from "next/dist/next-server/lib/utils"
 import { AppProps } from "next/dist/next-server/lib/router/router"
 import { RecoilRoot } from "recoil"
+import { Provider as AuthProvider } from "next-auth/client"
 
 import PageLayout from "../templates/PageLayout"
 
@@ -18,9 +19,11 @@ const App: NextComponentType<AppContextType, AppInitialProps, AppProps> = ({
 }: any) => {
   return (
     <RecoilRoot>
-      <PageLayout {...pageProps}>
-        <Component {...pageProps} />
-      </PageLayout>
+      <AuthProvider session={pageProps.session}>
+        <PageLayout {...pageProps}>
+          <Component {...pageProps} />
+        </PageLayout>
+      </AuthProvider>
     </RecoilRoot>
   )
 }

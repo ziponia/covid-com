@@ -1,7 +1,8 @@
 import React from "react"
-import { Layout, Menu, Tooltip } from "antd"
+import { Button, Layout, Menu, Tooltip } from "antd"
 import Link from "next/link"
 import { FiPower } from "react-icons/fi"
+import { signIn } from "next-auth/client"
 
 import PageHeader from "./PageHeader"
 import { AppLayoutProps } from "../../next-env"
@@ -19,13 +20,12 @@ const PageLayout: React.FC<Props> = (props) => {
           </a>
         </Link>
         <span style={{ flex: 1 }} />
-        <Link href="/login">
-          <a>
-            <Tooltip title="Sign-in">
-              <FiPower />
-            </Tooltip>
-          </a>
-        </Link>
+
+        <Button type="link" onClick={() => signIn()}>
+          <Tooltip title="Sign-in">
+            <FiPower />
+          </Tooltip>
+        </Button>
       </Layout.Header>
       <Layout.Content className="__main" style={{ padding: "0 50px" }}>
         {/* <Breadcrumb style={{ margin: "16px 0" }}>
