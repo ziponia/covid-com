@@ -10,10 +10,9 @@ type Props = {}
 
 const SignIn: AppPageProps<Props> = (props) => {
   const { providers } = props
-  console.log(providers)
   return (
     <Row style={{ flex: 1 }}>
-      <Col span={12}>
+      <Col span={10}>
         <Card
           title="LOGIN PAGE"
           style={{ width: "100%", height: "100%", padding: "60px" }}>
@@ -67,7 +66,7 @@ const SignIn: AppPageProps<Props> = (props) => {
                 type="primary"
                 htmlType="submit"
                 className="login-form-button"
-                style={{ width: 455, height: 40 }}>
+                style={{ width: "100%", height: 40 }}>
                 로그인
               </Button>
               <Button
@@ -75,7 +74,7 @@ const SignIn: AppPageProps<Props> = (props) => {
                 style={{
                   marginTop: 10,
                   backgroundColor: "#FEE53B",
-                  width: 455,
+                  width: "100%",
                   height: 40,
                   color: "#181601",
                   fontWeight: "bold",
@@ -87,7 +86,7 @@ const SignIn: AppPageProps<Props> = (props) => {
         </Card>
       </Col>
       <Col
-        span={12}
+        span={14}
         style={{
           backgroundImage: `url("https://images.pexels.com/photos/3951606/pexels-photo-3951606.jpeg?cs=srgb&dl=pexels-cottonbro-3951606.jpg&fm=jpg")`,
           backgroundSize: "cover",

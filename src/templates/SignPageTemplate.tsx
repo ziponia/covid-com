@@ -11,7 +11,7 @@ const SignPageTemplate: React.FC<Props> = (props) => {
     <Layout className="app-layout">
       <Layout.Content className="__main">
         <Layout className="site-layout-background">
-          <Layout.Content style={{ padding: 200, display: "flex" }}>
+          <Layout.Content style={{ display: "flex" }}>
             {children}
           </Layout.Content>
         </Layout>
