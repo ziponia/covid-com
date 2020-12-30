@@ -1,0 +1,28 @@
+#__next {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .app-layout {
+    flex: 1;
+  }
+}
+
+.logo {
+  float: left;
+  width: 120px;
+  height: 31px;
+  margin: 16px 24px 16px 0;
+  line-height: 31px;
+  color: #ffffff;
+}
+
+// Main
+.ant-layout-content.__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-page-header {
+  background-color: #ffffff;
+}
