@@ -1,6 +1,7 @@
 import React from "react"
-import { Layout, Menu } from "antd"
+import { Layout, Menu, Tooltip } from "antd"
 import Link from "next/link"
+import { FiPower } from "react-icons/fi"
 
 import PageHeader from "./PageHeader"
 import { AppLayoutProps } from "../../next-env"
@@ -11,10 +12,18 @@ const PageLayout: React.FC<Props> = (props) => {
   const { children, pageTitle, pageSubTitle } = props
   return (
     <Layout className="app-layout">
-      <Layout.Header className="header">
+      <Layout.Header className="app-header">
         <Link href="/">
           <a className="logo" href="/">
             코로나 커뮤니티
+          </a>
+        </Link>
+        <span style={{ flex: 1 }} />
+        <Link href="/login">
+          <a>
+            <Tooltip title="Sign-in">
+              <FiPower />
+            </Tooltip>
           </a>
         </Link>
       </Layout.Header>

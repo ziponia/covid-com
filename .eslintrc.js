@@ -38,5 +38,6 @@ module.exports = {
     "no-shadow": "off",
     "no-param-reassign": "off",
     "react/jsx-wrap-multilines": "off",
+    "jsx-a11y/anchor-is-valid": "off",
   },
 }

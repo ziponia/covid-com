@@ -14,7 +14,8 @@
   height: 31px;
   margin: 16px 24px 16px 0;
   line-height: 31px;
-  color: #ffffff;
+  color: #333;
+  font-weight: 900;
 }
 
 // Main
@@ -24,5 +25,10 @@
 }
 
 .site-page-header {
+  background-color: #ffffff;
+}
+
+.app-layout .app-header {
+  display: flex;
   background-color: #ffffff;
 }
