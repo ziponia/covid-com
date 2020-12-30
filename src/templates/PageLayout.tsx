@@ -5,12 +5,13 @@ import { FiPower } from "react-icons/fi"
 import { signIn } from "next-auth/client"
 
 import PageHeader from "./PageHeader"
-import { AppLayoutProps } from "../../next-env"
+import { AppLayoutProps } from "../_app.interface"
 
 type Props = AppLayoutProps & {}
 
 const PageLayout: React.FC<Props> = (props) => {
-  const { children, pageTitle, pageSubTitle } = props
+  const { children, pageTitle, pageSubTitle, sidebar } = props
+  console.log(props)
   return (
     <Layout className="app-layout">
       <Layout.Header className="app-header">
@@ -36,16 +37,18 @@ const PageLayout: React.FC<Props> = (props) => {
         <Layout
           className="site-layout-background"
           style={{ padding: "24px 0" }}>
-          <Layout.Sider className="site-layout-background" width={200}>
-            <Menu
-              mode="inline"
-              defaultSelectedKeys={["1"]}
-              defaultOpenKeys={["sub1"]}
-              style={{ height: "100%" }}>
-              <Menu.Item key="1">Home</Menu.Item>
-              <Menu.Item key="2">커뮤니티</Menu.Item>
-            </Menu>
-          </Layout.Sider>
+          {sidebar && (
+            <Layout.Sider className="site-layout-background" width={200}>
+              <Menu
+                mode="inline"
+                defaultSelectedKeys={["1"]}
+                defaultOpenKeys={["sub1"]}
+                style={{ height: "100%" }}>
+                <Menu.Item key="1">Home</Menu.Item>
+                <Menu.Item key="2">커뮤니티</Menu.Item>
+              </Menu>
+            </Layout.Sider>
+          )}
           <Layout.Content style={{ padding: "0 24px", minHeight: 280 }}>
             {children}
           </Layout.Content>
