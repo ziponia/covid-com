@@ -11,9 +11,9 @@ import {
   Image,
 } from "antd"
 import { UserOutlined, LockOutlined, BorderOutlined } from "@ant-design/icons"
+import { providers, signIn } from "next-auth/client"
 import { AppPageProps } from "../../../next-env"
 import "antd/dist/antd.css"
-import { providers, signIn } from "next-auth/client"
 
 type Props = {}
 
