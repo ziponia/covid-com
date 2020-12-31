@@ -73,3 +73,12 @@ model Likes {
   feedId        Int
   created_at    DateTime @default(now())
 }
+
+model Screps {
+  id            String @id @default(uuid())
+  author        users @relation(fields: [authorId], references: [id])
+  authorId      Int
+  feed          Feeds @relation(fields: [feedId], references: [id])
+  feedId        Int
+  created_at    DateTime @default(now())
+}
