@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Button, Divider, Drawer, Input, Tooltip } from "antd"
+import { Button, Card, Divider, Drawer, Input, Spin, Tooltip } from "antd"
 import { DrawerProps } from "antd/lib/drawer"
 import styled from "styled-components"
 import { FiArrowLeft, FiCheck } from "react-icons/fi"
@@ -7,8 +7,9 @@ import { FiArrowLeft, FiCheck } from "react-icons/fi"
 import Editor from "../../components/Editor"
 import $http from "../../lib/client"
 
-const StyledContainer = styled.div`
+const StyledContainer = styled(Card)`
   margin: auto;
+  border: 0;
 
   .post-create-title {
     margin-bottom: 20px;
@@ -28,7 +29,9 @@ const StyledContainer = styled.div`
   }
 `
 
-export type FeedWriteDrawerProps = DrawerProps & {}
+export type FeedWriteDrawerProps = DrawerProps & {
+  onClose?: (e?: any) => void
+}
 
 const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
   const { children, ...rest } = props
@@ -37,6 +40,8 @@ const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
     title: "",
     content: "",
   })
+
+  const [loading, setLoading] = useState(false)
 
   const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { onClose } = props
@@ -58,50 +63,55 @@ const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
   }
 
   const handleSubmit = async () => {
+    const { onClose } = props
     try {
+      setLoading(true)
       const { data } = await $http.post(`/api/feed`, feed)
-      console.log("data", data)
+      onClose && onClose()
     } catch (e) {
       console.log("error", e)
     } finally {
+      setLoading(false)
     }
   }
 
   return (
     <Drawer {...rest}>
       <StyledContainer>
-        <Divider>글쓰기</Divider>
-        <div className="action-block">
-          <Tooltip title="뒤로가기">
-            <Button
-              size="large"
-              type="ghost"
-              shape="circle"
-              className="location-back-icon"
-              onClick={handleClose}
-              icon={<FiArrowLeft />}
-            />
-          </Tooltip>
-          <span style={{ flex: 1 }} />
-          <Tooltip title="완료">
-            <Button
-              type="ghost"
-              shape="circle"
-              size="large"
-              className="location-back-icon"
-              onClick={handleSubmit}
-              icon={<FiCheck />}
-            />
-          </Tooltip>
-        </div>
-        <Input
-          size="large"
-          className="post-create-title"
-          placeholder="생각을 알려주세요 :)"
-          onChange={onChangeTitle}
-          value={feed.title}
-        />
-        <Editor value={feed.content} onChange={onChangeContent} />
+        <Spin spinning={loading}>
+          <Divider>글쓰기</Divider>
+          <div className="action-block">
+            <Tooltip title="뒤로가기">
+              <Button
+                size="large"
+                type="ghost"
+                shape="circle"
+                className="location-back-icon"
+                onClick={handleClose}
+                icon={<FiArrowLeft />}
+              />
+            </Tooltip>
+            <span style={{ flex: 1 }} />
+            <Tooltip title="완료">
+              <Button
+                type="ghost"
+                shape="circle"
+                size="large"
+                className="location-back-icon"
+                onClick={handleSubmit}
+                icon={<FiCheck />}
+              />
+            </Tooltip>
+          </div>
+          <Input
+            size="large"
+            className="post-create-title"
+            placeholder="생각을 알려주세요 :)"
+            onChange={onChangeTitle}
+            value={feed.title}
+          />
+          <Editor value={feed.content} onChange={onChangeContent} />
+        </Spin>
       </StyledContainer>
     </Drawer>
   )

@@ -18,7 +18,11 @@
     "strict": true,
     "target": "esnext",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "@covid/*": ["./src/*"]
+    }
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx", "src/pages/api/auth/signin.jsx"]

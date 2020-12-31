@@ -1,5 +1,5 @@
-import { NormalizedCacheObject } from "@apollo/client"
-import { NextComponentType } from "next"
+import { NextApiRequest, NextComponentType } from "next"
+import { users as User } from "@prisma/client"
 
 export type AppLayoutProps = {
   pageTitle?: string
@@ -11,11 +11,7 @@ export type AppAuthProps = {
   providers?: any
 }
 
-export type AppApolloProps = {
-  initialApolloState?: NormalizedCacheObject
-}
-
-export type AppCombineProps = AppLayoutProps & AppAuthProps & AppApolloProps
+export type AppCombineProps = AppLayoutProps & AppAuthProps
 
 export type AppPageProps<T = {}> = NextComponentType<
   T,
@@ -28,4 +24,8 @@ export type AppPageProps<T = {}> = NextComponentType<
 export const defaultAppProps: AppLayoutProps = {
   pageTitle: "Covid Com",
   header: true,
+}
+
+export type AppApiRequest = NextApiRequest & {
+  user?: User | null
 }

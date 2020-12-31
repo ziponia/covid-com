@@ -51,6 +51,9 @@ const options: InitOptions = {
       return Promise.resolve(token)
     },
     session: async (session, user) => {
+      session.user = {
+        ...user,
+      }
       return Promise.resolve(session)
     },
   },
