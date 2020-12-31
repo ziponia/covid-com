@@ -5,7 +5,8 @@
     "dev": "next -p 3001",
     "build": "next build",
     "start": "next start",
-    "type-check": "tsc"
+    "type-check": "tsc",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
