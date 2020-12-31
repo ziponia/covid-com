@@ -12,48 +12,31 @@ import {
 import { ColumnsType } from "antd/lib/table"
 import { BsPencil } from "react-icons/bs"
 import { NextPageContext } from "next"
+import { Feed } from "@prisma/client"
 import dynamic from "next/dynamic"
 import Router from "next/router"
 import Link from "next/link"
-import useSWR from "swr"
 
-import { AppPageProps } from "../_app.interface"
-import FeedItem from "../components/FeedItem"
-import useRequest from "../hooks/useRequest"
+import { AppPageProps } from "@covid/_app.interface"
+import FeedItem from "@covid/components/FeedItem"
+import useRequest from "@covid/hooks/useRequest"
 
 const FeedWriteDrawer = dynamic(() => import("../containers/FeedWriteDrawer"), {
   ssr: false,
 })
-interface Board {
-  idx: number
-  title: string
-  content: string
-  createDt: string
-  author: string
-  relate: number
-}
-
-const mockData: Board[] = Array(100)
-  .fill(true)
-  .map((_, index) => ({
-    idx: index + 1,
-    author: `Kuby-${index}`,
-    content: "다들 너무 힘든시기에 ...",
-    createDt: "2020. 09. 03. 12:11",
-    title: "다들 너무 힘든시기에...",
-    relate: 30,
-  }))
 
 type Props = {}
 
 const IndexPage: AppPageProps<Props> = (props) => {
   const { pageTitle, pageSubTitle, ...rest } = props
 
-  const { data } = useRequest<{ version: string }>({
-    url: "/api/_site",
-    params: {
-      a: 1,
-    },
+  const { data: feeds } = useRequest<{
+    meta: {
+      totalElements: number
+    }
+    items: Feed[]
+  }>({
+    url: "/api/feeds",
   })
 
   const [affixed, setAffixed] = useState(false)
@@ -89,12 +72,12 @@ const IndexPage: AppPageProps<Props> = (props) => {
         </Affix>
         <Row>
           <Col span={12}>
-            <List
-              dataSource={mockData}
+            <List<Feed>
+              dataSource={feeds?.items}
               itemLayout="vertical"
               size="large"
               renderItem={(item) => (
-                <List.Item key={item.idx} style={{ marginBottom: 10 }}>
+                <List.Item key={item.id} style={{ marginBottom: 10 }}>
                   <FeedItem />
                 </List.Item>
               )}

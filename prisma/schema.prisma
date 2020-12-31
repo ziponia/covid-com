@@ -50,7 +50,7 @@ model verification_requests {
   updated_at DateTime @default(now())
 }
 
-model Feeds {
+model Feed {
   id            Int @id @default(autoincrement())
   title         String
   content       String
@@ -61,15 +61,13 @@ model Feeds {
   comments      Int @default(0)
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now())
-
-  @@map(name: "Feed")
 }
 
 model Likes {
   id            Int @id @default(autoincrement())
   author        users @relation(fields: [authorId], references: [id])
   authorId      Int
-  feed          Feeds @relation(fields: [feedId], references: [id])
+  feed          Feed @relation(fields: [feedId], references: [id])
   feedId        Int
   created_at    DateTime @default(now())
 }
@@ -78,7 +76,7 @@ model Screps {
   id            String @id @default(uuid())
   author        users @relation(fields: [authorId], references: [id])
   authorId      Int
-  feed          Feeds @relation(fields: [feedId], references: [id])
+  feed          Feed @relation(fields: [feedId], references: [id])
   feedId        Int
   created_at    DateTime @default(now())
 }

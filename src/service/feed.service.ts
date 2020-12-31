@@ -16,8 +16,8 @@ const create = async (req: AppApiRequest, res: NextApiResponse) => {
   const { title, content } = req.body
 
   console.log("create feed [title]", title)
-  console.log("create feed [content]", content)
-  const newFeed = await prisma.feeds.create({
+  console.log("create feed [content]", prisma)
+  const newFeed = await prisma.feed.create({
     data: {
       title,
       content,
@@ -31,6 +31,47 @@ const create = async (req: AppApiRequest, res: NextApiResponse) => {
   return res.send(newFeed)
 }
 
+/**
+ * 피드 리스트를 출력합니다.
+ */
+const list = async (req: AppApiRequest, res: NextApiResponse) => {
+  const { cursor, size = "20" } = req.query
+
+  const _cursor = cursor ? parseInt(cursor as string, 10) : -1
+
+  try {
+    console.log("typeof: ", typeof prisma.feed)
+    const totalElements = 0
+    const lastFeed = await prisma.feed.findFirst({
+      orderBy: {
+        id: "desc",
+      },
+      distinct: "id",
+    })
+
+    console.log("lastFeedId", lastFeed)
+    const feeds = await prisma.feed.findMany({
+      cursor: {
+        id: lastFeed?.id,
+      },
+      orderBy: {
+        id: "desc",
+      },
+      take: parseInt(size as string, 10),
+    })
+    return res.send({
+      meta: {
+        totalElements,
+      },
+      items: feeds,
+    })
+  } catch (e) {
+    console.error(e)
+    return res.send(e)
+  }
+}
+
 export default {
   create,
+  list,
 }
