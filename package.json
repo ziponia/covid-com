@@ -6,7 +6,9 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
-    "postinstall": "npx prisma generate"
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev --preview-feature",
+    "postinstall": "yarn generate"
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",

@@ -3,6 +3,9 @@ import { AppApiRequest } from "@covid/_app.interface"
 
 import { NextApiResponse } from "next"
 
+/**
+ * 피드를 생성합니다.
+ */
 const create = async (req: AppApiRequest, res: NextApiResponse) => {
   if (!req.user) {
     return res.status(401).send({
@@ -12,10 +15,9 @@ const create = async (req: AppApiRequest, res: NextApiResponse) => {
 
   const { title, content } = req.body
 
-  console.log("req.body", typeof req.body)
   console.log("create feed [title]", title)
   console.log("create feed [content]", content)
-  const newFeed = await prisma.feed.create({
+  const newFeed = await prisma.feeds.create({
     data: {
       title,
       content,

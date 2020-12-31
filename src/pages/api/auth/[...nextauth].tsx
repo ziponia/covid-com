@@ -1,6 +1,20 @@
+import { PrismaClient, users } from "@prisma/client"
 import { NextApiResponse } from "next"
 import NextAuth, { InitOptions } from "next-auth"
+import Adapters from "next-auth/adapters"
 import { NextApiRequest } from "next-auth/_utils"
+// import prisma from "@covid/lib/prisma"
+
+let prisma
+
+if (process.env.NODE_ENV === "production") {
+  prisma = new PrismaClient()
+} else {
+  if (!(global as any).prisma) {
+    ;(global as any).prisma = new PrismaClient()
+  }
+  prisma = (global as any).prisma
+}
 
 const options: InitOptions = {
   // Configure one or more authentication providers
@@ -52,6 +66,7 @@ const options: InitOptions = {
     },
     session: async (session, user) => {
       session.user = {
+        ...session.user,
         ...user,
       }
       return Promise.resolve(session)
