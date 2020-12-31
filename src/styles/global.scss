@@ -22,6 +22,11 @@
 .ant-layout-content.__main {
   display: flex;
   flex-direction: column;
+
+  .ant-layout-content {
+    &.main-container {
+    }
+  }
 }
 
 .site-page-header {

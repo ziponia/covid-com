@@ -1,11 +1,29 @@
-import React from "react"
-import { Button, Layout, PageHeader, Table } from "antd"
+import React, { useState } from "react"
+import {
+  Button,
+  Layout,
+  PageHeader,
+  Affix,
+  BackTop,
+  List,
+  Row,
+  Col,
+} from "antd"
 import { ColumnsType } from "antd/lib/table"
 import { BsPencil } from "react-icons/bs"
+import { NextPageContext } from "next"
+import dynamic from "next/dynamic"
+import Router from "next/router"
 import Link from "next/link"
 
+import { initializeApolllo } from "../apollo-client"
 import { AppPageProps } from "../_app.interface"
+import { INITIAL_QUERY } from "../graphql/query"
+import PostItem from "../components/PostItem"
 
+const PostWriteDrawer = dynamic(() => import("../containers/PostWriteDrawer"), {
+  ssr: false,
+})
 interface Board {
   idx: number
   title: string
@@ -57,34 +75,87 @@ const mockData: Board[] = Array(100)
 type Props = {}
 
 const IndexPage: AppPageProps<Props> = (props) => {
-  const { pageTitle, pageSubTitle } = props
+  const { pageTitle, pageSubTitle, ...rest } = props
+
+  const [affixed, setAffixed] = useState(false)
+
+  const onAffixChangee = (affixed?: boolean) => {
+    setAffixed(!!affixed)
+  }
+
+  const onPostWriteVisiableChange = (show: boolean) => {
+    console.log("show", show)
+  }
+
   return (
-    <Layout>
-      <PageHeader
-        title={pageTitle}
-        subTitle={pageSubTitle}
-        style={{ paddingTop: 0 }}
-        extra={
-          <Link href="/post/create">
-            <Button icon={<BsPencil />} type="primary">
-              글쓰기
-            </Button>
-          </Link>
-        }
-      />
-      <Table<Board>
-        dataSource={mockData}
-        columns={columns}
-        rowKey={(item) => item.idx}
-      />
-    </Layout>
+    <>
+      <Layout>
+        <Affix onChange={onAffixChangee}>
+          <PageHeader
+            title={pageTitle}
+            subTitle={pageSubTitle}
+            style={{
+              paddingTop: 0,
+              backgroundColor: affixed ? "#fff" : undefined,
+              borderBottom: affixed ? "1px solid #eee" : undefined,
+            }}
+            extra={
+              <Link href="/#/post/create">
+                <a>
+                  <Button icon={<BsPencil />} type="primary">
+                    글쓰기
+                  </Button>
+                </a>
+              </Link>
+            }
+          />
+        </Affix>
+        <Row>
+          <Col span={12}>
+            <List
+              dataSource={mockData}
+              itemLayout="vertical"
+              size="large"
+              renderItem={(item) => (
+                <List.Item key={item.idx} style={{ marginBottom: 10 }}>
+                  <PostItem />
+                </List.Item>
+              )}
+            />
+          </Col>
+          <Col span={12} />
+        </Row>
+      </Layout>
+      {typeof window !== "undefined" && (
+        <PostWriteDrawer
+          visible={window.location.hash === "#/post/create"}
+          destroyOnClose
+          afterVisibleChange={onPostWriteVisiableChange}
+          width={760}
+          onClose={() => {
+            Router.push({
+              hash: undefined,
+            })
+          }}
+        />
+      )}
+      <BackTop />
+    </>
   )
 }
 
-IndexPage.getInitialProps = async (ctx) => {
+IndexPage.getInitialProps = async (context: NextPageContext) => {
+  const apollo = initializeApolllo()
+  const { query } = context
+
+  await apollo.query({ query: INITIAL_QUERY })
+
+  console.log(query.idx)
+
   return {
     pageTitle: "커뮤니티",
     pageSubTitle: "코로나로 인해 힘든 이웃들과 고민을 나누어요",
+    initialApolloState: apollo.cache.extract(),
   }
 }
 

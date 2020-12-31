@@ -1,11 +1,9 @@
+import { NormalizedCacheObject } from "@apollo/client"
 import { NextComponentType } from "next"
-import { ReactNode } from "react"
-import PageLayout from "./templates/PageLayout"
 
 export type AppLayoutProps = {
   pageTitle?: string
   pageSubTitle?: string
-  sidebar?: boolean
   header?: boolean
 }
 
@@ -13,7 +11,11 @@ export type AppAuthProps = {
   providers?: any
 }
 
-export type AppCombineProps = AppLayoutProps & AppAuthProps
+export type AppApolloProps = {
+  initialApolloState?: NormalizedCacheObject
+}
+
+export type AppCombineProps = AppLayoutProps & AppAuthProps & AppApolloProps
 
 export type AppPageProps<T = {}> = NextComponentType<
   T,
@@ -24,7 +26,6 @@ export type AppPageProps<T = {}> = NextComponentType<
 }
 
 export const defaultAppProps: AppLayoutProps = {
-  sidebar: true,
   pageTitle: "Covid Com",
   header: true,
 }

@@ -40,5 +40,9 @@ module.exports = {
     "react/jsx-wrap-multilines": "off",
     "jsx-a11y/anchor-is-valid": "off",
     "react/destructuring-assignment": "off",
+    "react/jsx-pascal-case": "off",
+    "no-undef": "off",
+    "no-unused-expressions": "off",
+    "react/jsx-curly-brace-presence": "off",
   },
 }
