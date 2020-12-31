@@ -2,11 +2,11 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: "/post",
+        source: "/feed",
         destination: "/",
       },
       {
-        source: "/post/:idx",
+        source: "/feed/:idx",
         destination: "/",
       },
     ]

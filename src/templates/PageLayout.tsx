@@ -1,9 +1,9 @@
 import React from "react"
-import { Button, Layout, Menu, Tooltip } from "antd"
+import { Avatar, Button, Layout, Menu, Tooltip } from "antd"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { FiPower } from "react-icons/fi"
-import { signIn } from "next-auth/client"
+import { signIn, useSession, signOut } from "next-auth/client"
 
 import { AppLayoutProps } from "../_app.interface"
 
@@ -11,6 +11,13 @@ type Props = AppLayoutProps & {}
 
 const PageLayout: React.FC<Props> = (props) => {
   const { children, pageTitle, pageSubTitle, header } = props
+  const [session, loading] = useSession()
+
+  const _signOut = () => {
+    signOut({
+      callbackUrl: window.location.href,
+    })
+  }
 
   return (
     <>
@@ -24,11 +31,20 @@ const PageLayout: React.FC<Props> = (props) => {
             </Link>
             <span style={{ flex: 1 }} />
 
-            <Button type="link" onClick={() => signIn()}>
-              <Tooltip title="Sign-in">
-                <FiPower />
+            {!session && (
+              <Button type="link" onClick={() => signIn()}>
+                <Tooltip title="Sign-in">
+                  <FiPower />
+                </Tooltip>
+              </Button>
+            )}
+            {!!session && (
+              <Tooltip title="Sign-Out">
+                <a onClick={_signOut}>
+                  <Avatar src={session?.user.image} />
+                </a>
               </Tooltip>
-            </Button>
+            )}
           </Layout.Header>
         )}
         <Layout.Content className="__main" style={{ padding: "0 50px" }}>

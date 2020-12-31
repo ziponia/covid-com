@@ -1,6 +1,5 @@
 import { NextApiResponse } from "next"
 import NextAuth, { InitOptions } from "next-auth"
-import Providers from "next-auth/providers"
 import { NextApiRequest } from "next-auth/_utils"
 
 const options: InitOptions = {
@@ -41,6 +40,21 @@ const options: InitOptions = {
     verifyRequest: "/auth/verify-request", // (used for check email message)
     newUser: null, // If set, new users will be directed here on first sign in
   },
+  // session: {
+  //   jwt: true,
+  // },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+  },
+  callbacks: {
+    jwt: async (token, user, account, profile, isNewUser) => {
+      return Promise.resolve(token)
+    },
+    session: async (session, user) => {
+      return Promise.resolve(session)
+    },
+  },
+  debug: process.env.NODE_ENV !== "production",
 }
 
 export default (req: NextApiRequest, res: NextApiResponse) =>

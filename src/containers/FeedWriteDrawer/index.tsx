@@ -1,10 +1,11 @@
-import React from "react"
+import React, { useState } from "react"
 import { Button, Divider, Drawer, Input, Tooltip } from "antd"
 import { DrawerProps } from "antd/lib/drawer"
 import styled from "styled-components"
 import { FiArrowLeft, FiCheck } from "react-icons/fi"
 
 import Editor from "../../components/Editor"
+import $http from "../../lib/client"
 
 const StyledContainer = styled.div`
   margin: auto;
@@ -27,15 +28,45 @@ const StyledContainer = styled.div`
   }
 `
 
-export type PostWriteDrawerProps = DrawerProps & {}
+export type FeedWriteDrawerProps = DrawerProps & {}
 
-const PostWriteDrawer: React.FC<PostWriteDrawerProps> = (props) => {
+const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
   const { children, ...rest } = props
+
+  const [feed, setFeed] = useState({
+    title: "",
+    content: "",
+  })
 
   const handleClose = (e: React.MouseEvent<HTMLButtonElement>) => {
     const { onClose } = props
     onClose && onClose(e)
   }
+
+  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFeed({
+      ...feed,
+      title: e.target.value,
+    })
+  }
+
+  const onChangeContent = (text: string) => {
+    setFeed({
+      ...feed,
+      content: text,
+    })
+  }
+
+  const handleSubmit = async () => {
+    try {
+      const { data } = await $http.post(`/api/feed`, feed)
+      console.log("data", data)
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
   return (
     <Drawer {...rest}>
       <StyledContainer>
@@ -58,6 +89,7 @@ const PostWriteDrawer: React.FC<PostWriteDrawerProps> = (props) => {
               shape="circle"
               size="large"
               className="location-back-icon"
+              onClick={handleSubmit}
               icon={<FiCheck />}
             />
           </Tooltip>
@@ -66,15 +98,17 @@ const PostWriteDrawer: React.FC<PostWriteDrawerProps> = (props) => {
           size="large"
           className="post-create-title"
           placeholder="생각을 알려주세요 :)"
+          onChange={onChangeTitle}
+          value={feed.title}
         />
-        <Editor />
+        <Editor value={feed.content} onChange={onChangeContent} />
       </StyledContainer>
     </Drawer>
   )
 }
 
-PostWriteDrawer.defaultProps = {
+FeedWriteDrawer.defaultProps = {
   closable: false,
 }
 
-export default PostWriteDrawer
+export default FeedWriteDrawer

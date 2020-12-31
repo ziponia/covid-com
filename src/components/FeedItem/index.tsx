@@ -18,7 +18,7 @@ const StyledCard = styled(Card)`
   }
 `
 
-export type PostItemProps = {}
+export type FeedItemProps = {}
 
 const IconText = ({ icon, text }: any) => (
   <Space>
@@ -27,7 +27,7 @@ const IconText = ({ icon, text }: any) => (
   </Space>
 )
 
-const PostItem: React.FC<PostItemProps> = (props) => {
+const FeedItem: React.FC<FeedItemProps> = (props) => {
   return (
     <StyledCard
       actions={[
@@ -59,4 +59,4 @@ const PostItem: React.FC<PostItemProps> = (props) => {
   )
 }
 
-export default PostItem
+export default FeedItem

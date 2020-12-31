@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model accounts {
+  id                   Int       @id @default(autoincrement())
+  compound_id          String
+  user_id              Int
+  provider_type        String
+  provider_id          String
+  provider_account_id  String
+  refresh_token        String?
+  access_token         String?
+  access_token_expires DateTime?
+  created_at           DateTime  @default(now())
+  updated_at           DateTime  @default(now())
+}
+
+model sessions {
+  id            Int      @id @default(autoincrement())
+  user_id       Int
+  expires       DateTime
+  session_token String
+  access_token  String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+}
+
+model users {
+  id             Int       @id @default(autoincrement())
+  name           String?
+  email          String?
+  email_verified DateTime?
+  image          String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @default(now())
+}
+
+model verification_requests {
+  id         Int      @id @default(autoincrement())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+}
+
+model feed {
+  id            Int @id @default(autoincrement())
+  title         String
+  content       String
+  author        users @relation(fields: [authorId], references: [id])
+  authorId      Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+}

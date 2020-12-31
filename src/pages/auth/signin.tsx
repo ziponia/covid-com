@@ -2,14 +2,26 @@ import React from "react"
 import { providers, signIn } from "next-auth/client"
 import { Card, Form, Input, Button, Checkbox, Col, Row } from "antd"
 import { UserOutlined, LockOutlined, BorderOutlined } from "@ant-design/icons"
-import "antd/dist/antd.css"
+import { useRouter } from "next/router"
+
 import { AppPageProps } from "../../_app.interface"
 import SignPageTemplate from "../../templates/SignPageTemplate"
+
+import "antd/dist/antd.css"
 
 type Props = {}
 
 const SignIn: AppPageProps<Props> = (props) => {
   const { providers } = props
+
+  const { query } = useRouter()
+
+  const signInKakao = () => {
+    signIn("kakao", {
+      callbackUrl: query.callbackUrl as string,
+    })
+  }
+
   return (
     <Row style={{ flex: 1 }}>
       <Col span={10}>
@@ -70,7 +82,7 @@ const SignIn: AppPageProps<Props> = (props) => {
                 로그인
               </Button>
               <Button
-                onClick={() => signIn("kakao")}
+                onClick={signInKakao}
                 style={{
                   marginTop: 10,
                   backgroundColor: "#FEE53B",

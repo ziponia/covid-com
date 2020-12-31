@@ -15,13 +15,13 @@ import { NextPageContext } from "next"
 import dynamic from "next/dynamic"
 import Router from "next/router"
 import Link from "next/link"
+import useSWR from "swr"
 
-import { initializeApolllo } from "../apollo-client"
 import { AppPageProps } from "../_app.interface"
-import { INITIAL_QUERY } from "../graphql/query"
-import PostItem from "../components/PostItem"
+import FeedItem from "../components/FeedItem"
+import useRequest from "../hooks/useRequest"
 
-const PostWriteDrawer = dynamic(() => import("../containers/PostWriteDrawer"), {
+const FeedWriteDrawer = dynamic(() => import("../containers/FeedWriteDrawer"), {
   ssr: false,
 })
 interface Board {
@@ -32,34 +32,6 @@ interface Board {
   author: string
   relate: number
 }
-
-const columns: ColumnsType<Board> = [
-  {
-    title: "번호",
-    dataIndex: "idx",
-    key: "idx",
-  },
-  {
-    title: "제목",
-    dataIndex: "title",
-    key: "title",
-  },
-  {
-    title: "작성자",
-    dataIndex: "author",
-    key: "author",
-  },
-  {
-    title: "공감",
-    dataIndex: "relate",
-    key: "relate",
-  },
-  {
-    title: "작성일",
-    dataIndex: "createDt",
-    key: "createDt",
-  },
-]
 
 const mockData: Board[] = Array(100)
   .fill(true)
@@ -77,15 +49,20 @@ type Props = {}
 const IndexPage: AppPageProps<Props> = (props) => {
   const { pageTitle, pageSubTitle, ...rest } = props
 
+  const { data } = useRequest<{ version: string }>({
+    url: "/api/_site",
+    params: {
+      a: 1,
+    },
+  })
+
   const [affixed, setAffixed] = useState(false)
 
   const onAffixChangee = (affixed?: boolean) => {
     setAffixed(!!affixed)
   }
 
-  const onPostWriteVisiableChange = (show: boolean) => {
-    console.log("show", show)
-  }
+  const onPostWriteVisiableChange = (show: boolean) => {}
 
   return (
     <>
@@ -118,7 +95,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
               size="large"
               renderItem={(item) => (
                 <List.Item key={item.idx} style={{ marginBottom: 10 }}>
-                  <PostItem />
+                  <FeedItem />
                 </List.Item>
               )}
             />
@@ -127,7 +104,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
         </Row>
       </Layout>
       {typeof window !== "undefined" && (
-        <PostWriteDrawer
+        <FeedWriteDrawer
           visible={window.location.hash === "#/post/create"}
           destroyOnClose
           afterVisibleChange={onPostWriteVisiableChange}
@@ -145,17 +122,11 @@ const IndexPage: AppPageProps<Props> = (props) => {
 }
 
 IndexPage.getInitialProps = async (context: NextPageContext) => {
-  const apollo = initializeApolllo()
   const { query } = context
-
-  await apollo.query({ query: INITIAL_QUERY })
-
-  console.log(query.idx)
 
   return {
     pageTitle: "커뮤니티",
     pageSubTitle: "코로나로 인해 힘든 이웃들과 고민을 나누어요",
-    initialApolloState: apollo.cache.extract(),
   }
 }
 
