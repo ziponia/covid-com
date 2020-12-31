@@ -4,6 +4,7 @@ import { Card, Form, Input, Button, Checkbox, Col, Row } from "antd"
 import { UserOutlined, LockOutlined, BorderOutlined } from "@ant-design/icons"
 import { useRouter } from "next/router"
 
+import Link from "next/link"
 import { AppPageProps } from "../../_app.interface"
 import SignPageTemplate from "../../templates/SignPageTemplate"
 
@@ -65,14 +66,25 @@ const SignIn: AppPageProps<Props> = (props) => {
                 placeholder="비밀번호"
               />
             </Form.Item>
-            <Form.Item>
-              <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>자동로그인</Checkbox>
-              </Form.Item>
-              <a className="login-form-forgot" href="">
-                비밀번호를 잊으셨나요?
-              </a>
-            </Form.Item>
+            <Row>
+              <Col span={18}>
+                <Form.Item>
+                  <Form.Item name="remember" valuePropName="checked" noStyle>
+                    <Checkbox>자동로그인</Checkbox>
+                  </Form.Item>
+                  <a className="login-form-forgot" href="">
+                    비밀번호를 잊으셨나요?
+                  </a>
+                </Form.Item>
+              </Col>
+              <Col span={6} style={{ textAlign: "right" }}>
+                <Link href="/auth/signup">
+                  <a className="sign-up" style={{ color: "#595959" }}>
+                    회원가입
+                  </a>
+                </Link>
+              </Col>
+            </Row>
             <Form.Item>
               <Button
                 type="primary"
