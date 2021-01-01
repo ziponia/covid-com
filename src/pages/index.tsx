@@ -3,16 +3,15 @@ import {
   Affix,
   BackTop,
   Button,
-  Card,
   Col,
   Layout,
   List,
   PageHeader,
   Row,
+  Grid,
 } from "antd"
 import { BsPencil } from "react-icons/bs"
 import { NextPageContext } from "next"
-import { Feed } from "@prisma/client"
 import dynamic from "next/dynamic"
 import Router from "next/router"
 import Link from "next/link"
@@ -26,6 +25,8 @@ import feedService, {
   ListFeedResponse,
 } from "@covid/service/feed.service"
 
+const { useBreakpoint } = Grid
+
 const FeedWriteDrawer = dynamic(() => import("../containers/FeedWriteDrawer"), {
   ssr: false,
 })
@@ -38,8 +39,10 @@ const IndexPage: AppPageProps<Props> = (props) => {
   const { pageTitle, pageSubTitle, data, ...rest } = props
 
   const [feeds, setFeeds] = useState(data)
+  const [loadingLikes, setLoadingLikes] = useState<number[]>([])
 
   const [affixed, setAffixed] = useState(false)
+  const screens = useBreakpoint()
 
   const onAffixChange = (affixed?: boolean) => {
     setAffixed(!!affixed)
@@ -58,6 +61,8 @@ const IndexPage: AppPageProps<Props> = (props) => {
   }
 
   const _onLikeFeed = async (feedId: number) => {
+    setLoadingLikes(loadingLikes.concat(feedId))
+
     const { data } = await feedService.likes({
       feedId,
     })
@@ -76,9 +81,11 @@ const IndexPage: AppPageProps<Props> = (props) => {
     })
 
     setFeeds(updateFeed)
+    setLoadingLikes(loadingLikes.filter((item) => item !== feedId))
   }
 
   const _onUnLikeFeed = async (likeId: number, feedId: number) => {
+    setLoadingLikes(loadingLikes.concat(feedId))
     const { data } = await feedService.unlikes({
       feedId,
       likeId,
@@ -96,9 +103,8 @@ const IndexPage: AppPageProps<Props> = (props) => {
       return feed
     })
 
-    console.log("updateFeed", updateFeed)
-
     setFeeds(updateFeed)
+    setLoadingLikes(loadingLikes.filter((item) => item !== feedId))
   }
 
   const onPostWriteVisiableChange = (show: boolean) => {}
@@ -126,7 +132,11 @@ const IndexPage: AppPageProps<Props> = (props) => {
           />
         </Affix>
         <Row>
-          <Col md={12} offset={6}>
+          <Col
+            md={12}
+            xs={24}
+            sm={!screens.md ? 24 : 12}
+            offset={screens.xs || !screens.md ? 0 : 6}>
             <List<FeedType>
               dataSource={feeds?.items}
               itemLayout="vertical"
@@ -141,6 +151,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
                     countlikes={item.likes}
                     countscreps={item.screps}
                     like={item.Likes.length > 0}
+                    likeLoading={loadingLikes.indexOf(item.id) > -1}
                     onLike={() => _onLikeFeed(item.id)}
                     onUnLike={() => {
                       if (item.Likes.length > 0) {
@@ -159,7 +170,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
           visible={window.location.hash === "#/post/create"}
           destroyOnClose
           afterVisibleChange={onPostWriteVisiableChange}
-          width={760}
+          width={!screens.md ? "100%" : 760}
           onSaved={onCreateFeed}
           onClose={handleCloseFeedWriteDrawer}
         />

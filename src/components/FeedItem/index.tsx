@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Skeleton, Switch, Card, Avatar, Space } from "antd"
+import { Skeleton, Switch, Card, Avatar, Space, Button } from "antd"
 import styled from "styled-components"
 import {
   LikeFilled,
@@ -30,21 +30,46 @@ export type FeedItemProps = {
   countscreps: number
   avatar?: string
   like?: boolean
+  likeLoading?: boolean
   onLike?: () => void
   onUnLike?: () => void
 }
 
-const IconText: React.FC<{
+type IconTextProps = {
   icon: any
   text: any
+  disabled?: boolean
+  loading?: boolean
   onClick?: () => void
-}> = ({ icon, text, onClick }: any) => (
-  <Space>
-    <div onClick={onClick}>
-      {React.createElement(icon)}
+}
+
+const StyledSpace = styled(Space)`
+  .ant-space-item {
+    width: 100%;
+    button {
+      padding: 0;
+    }
+  }
+`
+
+const IconText: React.FC<IconTextProps> = ({
+  icon,
+  text,
+  onClick,
+  disabled,
+  loading,
+}) => (
+  <StyledSpace style={{ width: "100%" }}>
+    <Button
+      onClick={onClick}
+      icon={icon}
+      disabled={disabled}
+      loading={loading}
+      type="text"
+      style={{ width: "100%" }}>
       {text}
-    </div>
-  </Space>
+    </Button>
+  </StyledSpace>
 )
 
 const FeedItem: React.FC<FeedItemProps> = (props) => {
@@ -60,15 +85,11 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     like,
   } = props
 
-  const [isLike, setLike] = useState(like)
-
   const _onLike = () => {
-    setLike(true)
     onLike && onLike()
   }
 
   const _onUnLike = () => {
-    setLike(false)
     onUnLike && onUnLike()
   }
 
@@ -76,18 +97,20 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     <StyledCard
       actions={[
         <IconText
-          icon={StarOutlined}
+          icon={<StarOutlined />}
           text={countscreps}
           key="list-vertical-star-o"
         />,
         <IconText
-          icon={isLike ? LikeFilled : LikeOutlined}
+          icon={like ? <LikeFilled /> : <LikeOutlined />}
           text={countlikes}
           key="list-vertical-like-o"
-          onClick={!isLike ? _onLike : _onUnLike}
+          loading={props.likeLoading}
+          disabled={props.likeLoading}
+          onClick={!like ? _onLike : _onUnLike}
         />,
         <IconText
-          icon={MessageOutlined}
+          icon={<MessageOutlined />}
           text="2"
           key="list-vertical-message"
         />,
