@@ -6,7 +6,7 @@ module.exports = {
         destination: "/",
       },
       {
-        source: "/feed/:idx",
+        source: "/feed/:id",
         destination: "/",
       },
     ]

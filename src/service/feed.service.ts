@@ -32,7 +32,30 @@ const create = async (payload: CreateFeedRequest) => {
   return $http.post<CreateFeedResponse>(`/api/feed`, payload)
 }
 
+const get = async (id: number) => {
+  return $http.get(`/api/feed/${id}`)
+}
+
+export interface LikeFeedResponse {
+  countOfFeedLikes: number
+}
+
+const likes = async (id: number) => {
+  return $http.post<LikeFeedResponse>(`/feed/likes/${id}`)
+}
+
+export interface UnLikeFeedResponse {
+  countOfFeedLikes: number
+}
+
+const unlikes = async (id: number) => {
+  return $http.post<UnLikeFeedResponse>(`/feed/unlikes/${id}`)
+}
+
 export default {
   list,
   create,
+  get,
+  likes,
+  unlikes,
 }

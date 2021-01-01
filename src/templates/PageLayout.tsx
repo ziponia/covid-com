@@ -47,13 +47,13 @@ const PageLayout: React.FC<Props> = (props) => {
             )}
           </Layout.Header>
         )}
-        <Layout.Content className="__main" style={{ padding: "0 50px" }}>
+        <Layout.Content className="__main">
           <Layout
             className="site-layout-background"
             style={{ padding: "24px 0" }}>
             <Layout.Content
               className="main-container"
-              style={{ padding: "0 24px", minHeight: 280 }}>
+              style={{ minHeight: 280 }}>
               {children}
             </Layout.Content>
           </Layout>

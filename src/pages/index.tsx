@@ -3,6 +3,7 @@ import {
   Affix,
   BackTop,
   Button,
+  Card,
   Col,
   Layout,
   List,
@@ -66,7 +67,6 @@ const IndexPage: AppPageProps<Props> = (props) => {
             title={pageTitle}
             subTitle={pageSubTitle}
             style={{
-              paddingTop: 0,
               backgroundColor: affixed ? "#fff" : undefined,
               borderBottom: affixed ? "1px solid #eee" : undefined,
             }}
@@ -82,7 +82,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
           />
         </Affix>
         <Row>
-          <Col span={12}>
+          <Col span={12} offset={6}>
             <List<FeedType>
               dataSource={feeds?.items}
               itemLayout="vertical"
@@ -90,6 +90,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
               renderItem={(item) => (
                 <List.Item key={item.id} style={{ marginBottom: 10 }}>
                   <FeedItem
+                    id={item.id}
                     title={item.title}
                     content={htmlToString(item.content)}
                     avatar={item.author.image || undefined}
@@ -100,7 +101,6 @@ const IndexPage: AppPageProps<Props> = (props) => {
               )}
             />
           </Col>
-          <Col span={12} />
         </Row>
       </Layout>
       {typeof window !== "undefined" && (
@@ -122,7 +122,6 @@ IndexPage.getInitialProps = async (context: NextPageContext) => {
   const { query } = context
 
   const { data } = await feedService.list()
-
   return {
     pageTitle: "커뮤니티",
     pageSubTitle: "코로나로 인해 힘든 이웃들과 고민을 나누어요",

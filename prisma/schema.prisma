@@ -70,6 +70,8 @@ model Likes {
   feed          Feed @relation(fields: [feedId], references: [id])
   feedId        Int
   created_at    DateTime @default(now())
+
+  @@unique([authorId, feedId])
 }
 
 model Screps {
