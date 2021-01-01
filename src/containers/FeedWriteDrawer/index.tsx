@@ -4,8 +4,8 @@ import { DrawerProps } from "antd/lib/drawer"
 import styled from "styled-components"
 import { FiArrowLeft, FiCheck } from "react-icons/fi"
 
-import Editor from "../../components/Editor"
-import $http from "../../lib/client"
+import Editor from "@covid/components/Editor"
+import feedService, { CreateFeedResponse } from "@covid/service/feed.service"
 
 const StyledContainer = styled(Card)`
   margin: auto;
@@ -31,10 +31,11 @@ const StyledContainer = styled(Card)`
 
 export type FeedWriteDrawerProps = DrawerProps & {
   onClose?: (e?: any) => void
+  onSaved?: (data?: CreateFeedResponse) => void
 }
 
 const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
-  const { children, ...rest } = props
+  const { children, onSaved, ...rest } = props
 
   const [feed, setFeed] = useState({
     title: "",
@@ -62,12 +63,20 @@ const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
     })
   }
 
+  const clearFeedFields = () => {
+    setFeed({
+      title: "",
+      content: "",
+    })
+  }
+
   const handleSubmit = async () => {
     const { onClose } = props
     try {
       setLoading(true)
-      const { data } = await $http.post(`/api/feed`, feed)
-      onClose && onClose()
+      const { data } = await feedService.create(feed)
+      clearFeedFields()
+      onSaved && onSaved(data)
     } catch (e) {
       console.log("error", e)
     } finally {

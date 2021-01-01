@@ -1,4 +1,5 @@
-import { NextApiRequest, NextComponentType } from "next"
+import React from "react"
+import { NextApiRequest, NextComponentType, NextPageContext } from "next"
 import { users as User } from "@prisma/client"
 
 export type AppLayoutProps = {
@@ -14,9 +15,9 @@ export type AppAuthProps = {
 export type AppCombineProps = AppLayoutProps & AppAuthProps
 
 export type AppPageProps<T = {}> = NextComponentType<
-  T,
-  AppCombineProps,
-  T & AppCombineProps
+  NextPageContext,
+  AppCombineProps & T,
+  AppCombineProps & T
 > & {
   Layout?: React.FC<AppLayoutProps>
 }

@@ -1,4 +1,4 @@
-import prisma from "@covid/lib/prisma"
+import prisma from "@covid/server/prisma"
 import { NextApiResponse } from "next"
 import { getSession } from "next-auth/client"
 import { NextHandler } from "next-connect"

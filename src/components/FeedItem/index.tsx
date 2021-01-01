@@ -18,7 +18,13 @@ const StyledCard = styled(Card)`
   }
 `
 
-export type FeedItemProps = {}
+export type FeedItemProps = {
+  title: string
+  content: string
+  countlikes: number
+  countscreps: number
+  avatar?: string
+}
 
 const IconText = ({ icon, text }: any) => (
   <Space>
@@ -28,11 +34,21 @@ const IconText = ({ icon, text }: any) => (
 )
 
 const FeedItem: React.FC<FeedItemProps> = (props) => {
+  const { title, avatar, content, countlikes, countscreps } = props
+
   return (
     <StyledCard
       actions={[
-        <IconText icon={StarOutlined} text="156" key="list-vertical-star-o" />,
-        <IconText icon={LikeOutlined} text="156" key="list-vertical-like-o" />,
+        <IconText
+          icon={StarOutlined}
+          text={countscreps}
+          key="list-vertical-star-o"
+        />,
+        <IconText
+          icon={LikeOutlined}
+          text={countlikes}
+          key="list-vertical-like-o"
+        />,
         <IconText
           icon={MessageOutlined}
           text="2"
@@ -41,19 +57,14 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
       ]}>
       <Skeleton loading={false} avatar active>
         <Meta
-          avatar={
-            <Avatar
-              src="https://avatars3.githubusercontent.com/u/44002901?s=460&u=305b1c9154337211cfef949836baff94f18e551f&v=4"
-              size="large"
-            />
-          }
+          avatar={avatar && <Avatar src={avatar} size="large" />}
           title={
             <Link href={`/post/1`}>
-              <a>Card title</a>
+              <a>{title}</a>
             </Link>
           }
         />
-        <p>adsfsadfsadfdsafasfadsfsad</p>
+        <p>{content}</p>
       </Skeleton>
     </StyledCard>
   )

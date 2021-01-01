@@ -1,15 +1,14 @@
 import React, { useState } from "react"
 import {
-  Button,
-  Layout,
-  PageHeader,
   Affix,
   BackTop,
-  List,
-  Row,
+  Button,
   Col,
+  Layout,
+  List,
+  PageHeader,
+  Row,
 } from "antd"
-import { ColumnsType } from "antd/lib/table"
 import { BsPencil } from "react-icons/bs"
 import { NextPageContext } from "next"
 import { Feed } from "@prisma/client"
@@ -19,30 +18,42 @@ import Link from "next/link"
 
 import { AppPageProps } from "@covid/_app.interface"
 import FeedItem from "@covid/components/FeedItem"
-import useRequest from "@covid/hooks/useRequest"
+import htmlToString from "@covid/lib/htmlToString"
+import feedService, {
+  CreateFeedResponse,
+  FeedType,
+  ListFeedResponse,
+} from "@covid/service/feed.service"
 
 const FeedWriteDrawer = dynamic(() => import("../containers/FeedWriteDrawer"), {
   ssr: false,
 })
 
-type Props = {}
+type Props = {
+  data: ListFeedResponse
+}
 
 const IndexPage: AppPageProps<Props> = (props) => {
-  const { pageTitle, pageSubTitle, ...rest } = props
+  const { pageTitle, pageSubTitle, data, ...rest } = props
 
-  const { data: feeds } = useRequest<{
-    meta: {
-      totalElements: number
-    }
-    items: Feed[]
-  }>({
-    url: "/api/feeds",
-  })
+  const [feeds, setFeeds] = useState(data)
 
   const [affixed, setAffixed] = useState(false)
 
-  const onAffixChangee = (affixed?: boolean) => {
+  const onAffixChange = (affixed?: boolean) => {
     setAffixed(!!affixed)
+  }
+
+  const handleCloseFeedWriteDrawer = () => {
+    Router.push({
+      hash: undefined,
+    })
+  }
+
+  const onCreateFeed = async (newFeed?: CreateFeedResponse) => {
+    handleCloseFeedWriteDrawer()
+    const { data } = await feedService.list()
+    setFeeds(data)
   }
 
   const onPostWriteVisiableChange = (show: boolean) => {}
@@ -50,7 +61,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
   return (
     <>
       <Layout>
-        <Affix onChange={onAffixChangee}>
+        <Affix onChange={onAffixChange}>
           <PageHeader
             title={pageTitle}
             subTitle={pageSubTitle}
@@ -72,13 +83,19 @@ const IndexPage: AppPageProps<Props> = (props) => {
         </Affix>
         <Row>
           <Col span={12}>
-            <List<Feed>
+            <List<FeedType>
               dataSource={feeds?.items}
               itemLayout="vertical"
               size="large"
               renderItem={(item) => (
                 <List.Item key={item.id} style={{ marginBottom: 10 }}>
-                  <FeedItem />
+                  <FeedItem
+                    title={item.title}
+                    content={htmlToString(item.content)}
+                    avatar={item.author.image || undefined}
+                    countlikes={item.likes}
+                    countscreps={item.screps}
+                  />
                 </List.Item>
               )}
             />
@@ -92,11 +109,8 @@ const IndexPage: AppPageProps<Props> = (props) => {
           destroyOnClose
           afterVisibleChange={onPostWriteVisiableChange}
           width={760}
-          onClose={() => {
-            Router.push({
-              hash: undefined,
-            })
-          }}
+          onSaved={onCreateFeed}
+          onClose={handleCloseFeedWriteDrawer}
         />
       )}
       <BackTop />
@@ -107,9 +121,12 @@ const IndexPage: AppPageProps<Props> = (props) => {
 IndexPage.getInitialProps = async (context: NextPageContext) => {
   const { query } = context
 
+  const { data } = await feedService.list()
+
   return {
     pageTitle: "커뮤니티",
     pageSubTitle: "코로나로 인해 힘든 이웃들과 고민을 나누어요",
+    data,
   }
 }
 

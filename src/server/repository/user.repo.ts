@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma"
+import prisma from "@covid/server/prisma"
 
 const findUserById = async (id: number) => {
   return prisma.users.findFirst({
