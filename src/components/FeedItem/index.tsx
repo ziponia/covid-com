@@ -1,7 +1,12 @@
-import React from "react"
+import React, { useState } from "react"
 import { Skeleton, Switch, Card, Avatar, Space } from "antd"
 import styled from "styled-components"
-import { LikeOutlined, MessageOutlined, StarOutlined } from "@ant-design/icons"
+import {
+  LikeFilled,
+  LikeOutlined,
+  MessageOutlined,
+  StarOutlined,
+} from "@ant-design/icons"
 import Link from "next/link"
 
 const { Meta } = Card
@@ -24,6 +29,9 @@ export type FeedItemProps = {
   countlikes: number
   countscreps: number
   avatar?: string
+  like?: boolean
+  onLike?: () => void
+  onUnLike?: () => void
 }
 
 const IconText: React.FC<{
@@ -32,15 +40,37 @@ const IconText: React.FC<{
   onClick?: () => void
 }> = ({ icon, text, onClick }: any) => (
   <Space>
-    {React.createElement(icon, {
-      onClick,
-    })}
-    {text}
+    <div onClick={onClick}>
+      {React.createElement(icon)}
+      {text}
+    </div>
   </Space>
 )
 
 const FeedItem: React.FC<FeedItemProps> = (props) => {
-  const { id, title, avatar, content, countlikes, countscreps } = props
+  const {
+    id,
+    title,
+    avatar,
+    content,
+    countlikes,
+    countscreps,
+    onLike,
+    onUnLike,
+    like,
+  } = props
+
+  const [isLike, setLike] = useState(like)
+
+  const _onLike = () => {
+    setLike(true)
+    onLike && onLike()
+  }
+
+  const _onUnLike = () => {
+    setLike(false)
+    onUnLike && onUnLike()
+  }
 
   return (
     <StyledCard
@@ -51,9 +81,10 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
           key="list-vertical-star-o"
         />,
         <IconText
-          icon={LikeOutlined}
+          icon={isLike ? LikeFilled : LikeOutlined}
           text={countlikes}
           key="list-vertical-like-o"
+          onClick={!isLike ? _onLike : _onUnLike}
         />,
         <IconText
           icon={MessageOutlined}

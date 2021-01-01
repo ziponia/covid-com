@@ -58,6 +58,12 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       take: parseInt(size as string, 10),
       include: {
         author: true,
+        Likes: {
+          distinct: "id",
+          where: {
+            authorId: req.user?.id,
+          },
+        },
       },
     })
     return res.send({
@@ -78,6 +84,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
  */
 const get = async (req: AppApiRequest, res: NextApiResponse) => {
   const { id } = req.query
+
   const feed = await prisma.feed.findUnique({
     where: {
       id: parseInt(id as string, 10),
@@ -96,7 +103,7 @@ const get = async (req: AppApiRequest, res: NextApiResponse) => {
  * 피드에 리액션 - 좋아요 를 추가합니다.
  */
 const likes = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { feedId } = req.query
+  const { feedId } = req.body
   const { user } = req
 
   if (!user) {
@@ -105,8 +112,8 @@ const likes = async (req: AppApiRequest, res: NextApiResponse) => {
     })
   }
 
-  await prisma.likes.upsert({
-    create: {
+  const likeFeed = await prisma.likes.create({
+    data: {
       author: {
         connect: {
           id: user.id,
@@ -118,15 +125,6 @@ const likes = async (req: AppApiRequest, res: NextApiResponse) => {
         },
       },
     },
-    update: {
-      created_at: new Date(),
-    },
-    where: {
-      authorId_feedId: {
-        authorId: user.id,
-        feedId: parseInt(feedId as string, 10),
-      },
-    },
   })
 
   const countOfFeedLikes = await prisma.likes.count({
@@ -135,7 +133,17 @@ const likes = async (req: AppApiRequest, res: NextApiResponse) => {
     },
   })
 
+  await prisma.feed.update({
+    data: {
+      likes: countOfFeedLikes,
+    },
+    where: {
+      id: parseInt(feedId as string, 10),
+    },
+  })
+
   return res.send({
+    Likes: likeFeed,
     countOfFeedLikes,
   })
 }
@@ -144,7 +152,7 @@ const likes = async (req: AppApiRequest, res: NextApiResponse) => {
  * 피드에 리액션 - 좋아요 를 삭제합니다.
  */
 const unlikes = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { feedId } = req.query
+  const { likeId, feedId } = req.body
   const { user } = req
 
   if (!user) {
@@ -153,18 +161,32 @@ const unlikes = async (req: AppApiRequest, res: NextApiResponse) => {
     })
   }
 
-  await prisma.likes.delete({
-    where: {
-      authorId_feedId: {
-        authorId: user.id,
-        feedId: parseInt(feedId as string, 10),
+  try {
+    console.log("delete likeId", likeId)
+    const deleted = await prisma.likes.delete({
+      where: {
+        id: likeId,
       },
-    },
-  })
+    })
+  } catch (e) {
+    console.log("Delete Error", e)
+  }
 
+  console.log(">>>>>>>>>>>> countOfFeedLikes.... ")
   const countOfFeedLikes = await prisma.likes.count({
     where: {
       feedId: parseInt(feedId as string, 10),
+    },
+  })
+  console.log(`>>>>>>>>>>>> countOfFeedLikes: ${countOfFeedLikes} `)
+
+  console.log(">>>>>>>>>>>> update Feed.... ")
+  await prisma.feed.update({
+    data: {
+      likes: countOfFeedLikes,
+    },
+    where: {
+      id: feedId,
     },
   })
 

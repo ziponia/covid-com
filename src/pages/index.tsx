@@ -57,6 +57,50 @@ const IndexPage: AppPageProps<Props> = (props) => {
     setFeeds(data)
   }
 
+  const _onLikeFeed = async (feedId: number) => {
+    const { data } = await feedService.likes({
+      feedId,
+    })
+
+    const updateFeed = { ...feeds }
+
+    updateFeed.items = updateFeed.items.map((feed) => {
+      if (feed.id === feedId) {
+        return {
+          ...feed,
+          likes: data.countOfFeedLikes,
+          Likes: [data.Likes],
+        }
+      }
+      return feed
+    })
+
+    setFeeds(updateFeed)
+  }
+
+  const _onUnLikeFeed = async (likeId: number, feedId: number) => {
+    const { data } = await feedService.unlikes({
+      feedId,
+      likeId,
+    })
+    const updateFeed = { ...feeds }
+
+    updateFeed.items = updateFeed.items.map((feed) => {
+      if (feed.id === feedId) {
+        return {
+          ...feed,
+          Likes: [],
+          likes: data.countOfFeedLikes,
+        }
+      }
+      return feed
+    })
+
+    console.log("updateFeed", updateFeed)
+
+    setFeeds(updateFeed)
+  }
+
   const onPostWriteVisiableChange = (show: boolean) => {}
 
   return (
@@ -82,7 +126,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
           />
         </Affix>
         <Row>
-          <Col span={12} offset={6}>
+          <Col md={12} offset={6}>
             <List<FeedType>
               dataSource={feeds?.items}
               itemLayout="vertical"
@@ -96,6 +140,13 @@ const IndexPage: AppPageProps<Props> = (props) => {
                     avatar={item.author.image || undefined}
                     countlikes={item.likes}
                     countscreps={item.screps}
+                    like={item.Likes.length > 0}
+                    onLike={() => _onLikeFeed(item.id)}
+                    onUnLike={() => {
+                      if (item.Likes.length > 0) {
+                        _onUnLikeFeed(item.Likes[0].id, item.id)
+                      }
+                    }}
                   />
                 </List.Item>
               )}
