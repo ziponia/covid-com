@@ -64,7 +64,7 @@ model Feed {
 }
 
 model Likes {
-  id            Int @id @default(autoincrement())
+  id            String @id @default(uuid())
   author        users @relation(fields: [authorId], references: [id])
   authorId      Int
   feed          Feed @relation(fields: [feedId], references: [id])

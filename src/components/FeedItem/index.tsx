@@ -5,6 +5,7 @@ import {
   LikeFilled,
   LikeOutlined,
   MessageOutlined,
+  StarFilled,
   StarOutlined,
 } from "@ant-design/icons"
 import Link from "next/link"
@@ -30,9 +31,11 @@ export type FeedItemProps = {
   countscreps: number
   avatar?: string
   like?: boolean
-  likeLoading?: boolean
+  screp?: boolean
   onLike?: () => Promise<void> | void
   onUnLike?: () => Promise<void> | void
+  onScrep?: () => Promise<void> | void
+  onUnScrep?: () => Promise<void> | void
 }
 
 type IconTextProps = {
@@ -80,12 +83,16 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     content,
     countlikes,
     countscreps,
+    like,
+    screp,
     onLike, // function
     onUnLike,
-    like,
+    onScrep,
+    onUnScrep,
   } = props
 
   const [loading, setLoading] = useState(false)
+  const [screpLoading, setScrepLoading] = useState(false)
 
   const _onLike = async () => {
     try {
@@ -105,13 +112,34 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     }
   }
 
+  const _onScrep = async () => {
+    try {
+      setScrepLoading(true)
+      onScrep && (await onScrep())
+    } finally {
+      setScrepLoading(false)
+    }
+  }
+
+  const _onUnScrep = async () => {
+    try {
+      setScrepLoading(true)
+      onUnScrep && (await onUnScrep())
+    } finally {
+      setScrepLoading(false)
+    }
+  }
+
   return (
     <StyledCard
       actions={[
         <IconText
-          icon={<StarOutlined />}
+          icon={screp ? <StarFilled /> : <StarOutlined />}
           text={countscreps}
           key="list-vertical-star-o"
+          loading={screpLoading}
+          disabled={screpLoading}
+          onClick={!screp ? _onScrep : _onUnScrep}
         />,
         <IconText
           icon={like ? <LikeFilled /> : <LikeOutlined />}

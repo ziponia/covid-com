@@ -64,6 +64,12 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
             authorId: req.user?.id,
           },
         },
+        Screps: {
+          distinct: "id",
+          where: {
+            authorId: req.user?.id,
+          },
+        },
       },
     })
     return res.send({
@@ -162,7 +168,6 @@ const unlikes = async (req: AppApiRequest, res: NextApiResponse) => {
   }
 
   try {
-    console.log("delete likeId", likeId)
     const deleted = await prisma.likes.delete({
       where: {
         id: likeId,
@@ -172,15 +177,12 @@ const unlikes = async (req: AppApiRequest, res: NextApiResponse) => {
     console.log("Delete Error", e)
   }
 
-  console.log(">>>>>>>>>>>> countOfFeedLikes.... ")
   const countOfFeedLikes = await prisma.likes.count({
     where: {
       feedId: parseInt(feedId as string, 10),
     },
   })
-  console.log(`>>>>>>>>>>>> countOfFeedLikes: ${countOfFeedLikes} `)
 
-  console.log(">>>>>>>>>>>> update Feed.... ")
   await prisma.feed.update({
     data: {
       likes: countOfFeedLikes,
@@ -195,10 +197,104 @@ const unlikes = async (req: AppApiRequest, res: NextApiResponse) => {
   })
 }
 
+/**
+ * 피드를 스크랩 합니다.
+ */
+const screps = async (req: AppApiRequest, res: NextApiResponse) => {
+  const { feedId } = req.body
+  const { user } = req
+
+  if (!user) {
+    return res.status(401).send({
+      message: "required authentication",
+    })
+  }
+
+  const screpFeed = await prisma.screps.create({
+    data: {
+      author: {
+        connect: {
+          id: user.id,
+        },
+      },
+      feed: {
+        connect: {
+          id: feedId,
+        },
+      },
+    },
+  })
+
+  const countOfFeedScreps = await prisma.screps.count({
+    where: {
+      feedId,
+    },
+  })
+
+  await prisma.feed.update({
+    data: {
+      screps: countOfFeedScreps,
+    },
+    where: {
+      id: feedId,
+    },
+  })
+
+  return res.send({
+    Screps: screpFeed,
+    countOfFeedScreps,
+  })
+}
+
+/**
+ * 피드에 리액션 - 좋아요 를 삭제합니다.
+ */
+const unscreps = async (req: AppApiRequest, res: NextApiResponse) => {
+  const { screpId, feedId } = req.body
+  const { user } = req
+
+  if (!user) {
+    return res.status(401).send({
+      message: "required authentication",
+    })
+  }
+
+  try {
+    const deleted = await prisma.screps.delete({
+      where: {
+        id: screpId,
+      },
+    })
+  } catch (e) {
+    console.log("Delete Error", e)
+  }
+
+  const countOfFeedScreps = await prisma.screps.count({
+    where: {
+      feedId: parseInt(feedId as string, 10),
+    },
+  })
+
+  await prisma.feed.update({
+    data: {
+      screps: countOfFeedScreps,
+    },
+    where: {
+      id: feedId,
+    },
+  })
+
+  return res.send({
+    countOfFeedScreps,
+  })
+}
+
 export default {
   create,
   list,
   get,
   likes,
   unlikes,
+  screps,
+  unscreps,
 }

@@ -80,7 +80,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
     setFeeds(updateFeed)
   }
 
-  const _onUnLikeFeed = async (likeId: number, feedId: number) => {
+  const _onUnLikeFeed = async (likeId: string, feedId: number) => {
     const { data } = await feedService.unlikes({
       feedId,
       likeId,
@@ -93,6 +93,48 @@ const IndexPage: AppPageProps<Props> = (props) => {
           ...feed,
           Likes: [],
           likes: data.countOfFeedLikes,
+        }
+      }
+      return feed
+    })
+
+    setFeeds(updateFeed)
+  }
+
+  const _onScrepFeed = async (feedId: number) => {
+    const { data } = await feedService.screps({
+      feedId,
+    })
+
+    const updateFeed = { ...feeds }
+
+    updateFeed.items = updateFeed.items.map((feed) => {
+      if (feed.id === feedId) {
+        return {
+          ...feed,
+          screps: data.countOfFeedScreps,
+          Screps: [data.Screps],
+        }
+      }
+      return feed
+    })
+
+    setFeeds(updateFeed)
+  }
+
+  const _onUnScrepFeed = async (screpId: string, feedId: number) => {
+    const { data } = await feedService.unscreps({
+      feedId,
+      screpId,
+    })
+    const updateFeed = { ...feeds }
+
+    updateFeed.items = updateFeed.items.map((feed) => {
+      if (feed.id === feedId) {
+        return {
+          ...feed,
+          Screps: [],
+          screps: data.countOfFeedScreps,
         }
       }
       return feed
@@ -145,10 +187,16 @@ const IndexPage: AppPageProps<Props> = (props) => {
                     countlikes={item.likes}
                     countscreps={item.screps}
                     like={item.Likes.length > 0}
+                    screp={item.Screps.length > 0}
                     onLike={() => _onLikeFeed(item.id)}
                     onUnLike={() => {
                       if (item.Likes.length === 0) return
                       return _onUnLikeFeed(item.Likes[0].id, item.id)
+                    }}
+                    onScrep={() => _onScrepFeed(item.id)}
+                    onUnScrep={() => {
+                      if (item.Screps.length === 0) return
+                      return _onUnScrepFeed(item.Screps[0].id, item.id)
                     }}
                   />
                 </List.Item>
