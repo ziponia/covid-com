@@ -61,6 +61,8 @@ model Feed {
   comments      Int @default(0)
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now())
+  agrees        Int @default(0)
+  disAgrees     Int @default(0)
 }
 
 model Likes {
@@ -81,4 +83,31 @@ model Screps {
   feed          Feed @relation(fields: [feedId], references: [id])
   feedId        Int
   created_at    DateTime @default(now())
+}
+
+model Agree {
+  id            String @id @default(uuid())
+  user          users @relation(fields: [userId], references: [id])
+  userId        Int
+  feed          Feed @relation(fields: [feedId], references: [id])
+  feedId        Int
+  action        AgreeAction
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+}
+
+model Comment {
+  id            String @id @default(uuid())
+  content       String
+  user          users @relation(fields: [userId], references: [id])
+  userId        Int
+  feed          Feed @relation(fields: [feedId], references: [id])
+  feedId        Int
+  created_at    DateTime @default(now())
+  updated_at    DateTime @default(now())
+}
+
+enum AgreeAction {
+  AGREE
+  DISAGREE
 }

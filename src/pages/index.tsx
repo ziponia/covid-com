@@ -150,11 +150,12 @@ const IndexPage: AppPageProps<Props> = (props) => {
       <Layout>
         <Affix onChange={onAffixChange}>
           <PageHeader
-            title={pageTitle}
+            title={!affixed && pageTitle}
             subTitle={pageSubTitle}
             style={{
               backgroundColor: affixed ? "#fff" : undefined,
               borderBottom: affixed ? "1px solid #eee" : undefined,
+              transition: "all 300ms",
             }}
             extra={
               <Link href="/#/post/create">

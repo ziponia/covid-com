@@ -72,7 +72,8 @@ const options: InitOptions = {
       return Promise.resolve(session)
     },
   },
-  debug: process.env.NODE_ENV !== "production",
+  // debug: process.env.NODE_ENV !== "production",
+  debug: false,
 }
 
 export default (req: NextApiRequest, res: NextApiResponse) =>
