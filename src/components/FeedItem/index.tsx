@@ -80,7 +80,7 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     content,
     countlikes,
     countscreps,
-    onLike,
+    onLike, // function
     onUnLike,
     like,
   } = props
@@ -104,10 +104,6 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    console.log(`Feed ID: ${id} Loading: `, loading)
-  }, [loading])
 
   return (
     <StyledCard
