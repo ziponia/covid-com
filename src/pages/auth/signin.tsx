@@ -1,6 +1,6 @@
 import React from "react"
 import { providers, signIn } from "next-auth/client"
-import { Card, Form, Input, Button, Checkbox, Col, Row } from "antd"
+import { Card, Form, Input, Button, Checkbox, Col, Row, Grid } from "antd"
 import { UserOutlined, LockOutlined, BorderOutlined } from "@ant-design/icons"
 import { useRouter } from "next/router"
 
@@ -10,12 +10,15 @@ import SignPageTemplate from "../../templates/SignPageTemplate"
 
 import "antd/dist/antd.css"
 
+const { useBreakpoint } = Grid
+
 type Props = {}
 
 const SignIn: AppPageProps<Props> = (props) => {
   const { providers } = props
 
   const { query } = useRouter()
+  const screen = useBreakpoint()
 
   const signInKakao = () => {
     signIn("kakao", {
@@ -23,16 +26,22 @@ const SignIn: AppPageProps<Props> = (props) => {
     })
   }
 
+  const isMobileScreen = screen.xs && !screen.md
+
   return (
     <Row style={{ flex: 1 }}>
-      <Col span={10}>
+      <Col span={!isMobileScreen ? 10 : 24}>
         <Card
           title="LOGIN PAGE"
-          style={{ width: "100%", height: "100%", padding: "60px" }}>
+          style={{
+            width: "100%",
+            height: "100%",
+            padding: !isMobileScreen ? 60 : 10,
+          }}>
           <p style={{ marginBottom: 20 }}>
             로그인을 통해 더욱 다양한 정보를 공유해보세요 :D
           </p>
-          <Form
+          {/* <Form
             name="normal_login"
             className="login-form"
             initialValues={{
@@ -93,29 +102,31 @@ const SignIn: AppPageProps<Props> = (props) => {
                 style={{ width: "100%", height: 40 }}>
                 로그인
               </Button>
-              <Button
-                onClick={signInKakao}
-                style={{
-                  marginTop: 10,
-                  backgroundColor: "#FEE53B",
-                  width: "100%",
-                  height: 40,
-                  color: "#181601",
-                  fontWeight: "bold",
-                }}>
-                KAKAO로 5초만에 로그인
-              </Button>
             </Form.Item>
-          </Form>
+          </Form> */}
+          <Button
+            onClick={signInKakao}
+            style={{
+              marginTop: 10,
+              backgroundColor: "#FEE53B",
+              width: "100%",
+              height: 40,
+              color: "#181601",
+              fontWeight: "bold",
+            }}>
+            KAKAO로 5초만에 로그인
+          </Button>
         </Card>
       </Col>
-      <Col
-        span={14}
-        style={{
-          backgroundImage: `url("https://images.pexels.com/photos/3951606/pexels-photo-3951606.jpeg?cs=srgb&dl=pexels-cottonbro-3951606.jpg&fm=jpg")`,
-          backgroundSize: "cover",
-        }}
-      />
+      {!screen.xs && (
+        <Col
+          span={14}
+          style={{
+            backgroundImage: `url("https://images.pexels.com/photos/3951606/pexels-photo-3951606.jpeg?cs=srgb&dl=pexels-cottonbro-3951606.jpg&fm=jpg")`,
+            backgroundSize: "cover",
+          }}
+        />
+      )}
     </Row>
   )
 }
