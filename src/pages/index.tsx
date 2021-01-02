@@ -39,7 +39,6 @@ const IndexPage: AppPageProps<Props> = (props) => {
   const { pageTitle, pageSubTitle, data, ...rest } = props
 
   const [feeds, setFeeds] = useState(data)
-  const [loadingLikes, setLoadingLikes] = useState<number[]>([])
 
   const [affixed, setAffixed] = useState(false)
   const screens = useBreakpoint()
@@ -61,8 +60,6 @@ const IndexPage: AppPageProps<Props> = (props) => {
   }
 
   const _onLikeFeed = async (feedId: number) => {
-    setLoadingLikes(loadingLikes.concat(feedId))
-
     const { data } = await feedService.likes({
       feedId,
     })
@@ -81,11 +78,9 @@ const IndexPage: AppPageProps<Props> = (props) => {
     })
 
     setFeeds(updateFeed)
-    setLoadingLikes(loadingLikes.filter((item) => item !== feedId))
   }
 
   const _onUnLikeFeed = async (likeId: number, feedId: number) => {
-    setLoadingLikes(loadingLikes.concat(feedId))
     const { data } = await feedService.unlikes({
       feedId,
       likeId,
@@ -104,7 +99,6 @@ const IndexPage: AppPageProps<Props> = (props) => {
     })
 
     setFeeds(updateFeed)
-    setLoadingLikes(loadingLikes.filter((item) => item !== feedId))
   }
 
   const onPostWriteVisiableChange = (show: boolean) => {}
@@ -151,12 +145,10 @@ const IndexPage: AppPageProps<Props> = (props) => {
                     countlikes={item.likes}
                     countscreps={item.screps}
                     like={item.Likes.length > 0}
-                    likeLoading={loadingLikes.indexOf(item.id) > -1}
                     onLike={() => _onLikeFeed(item.id)}
                     onUnLike={() => {
-                      if (item.Likes.length > 0) {
-                        _onUnLikeFeed(item.Likes[0].id, item.id)
-                      }
+                      if (item.Likes.length === 0) return
+                      return _onUnLikeFeed(item.Likes[0].id, item.id)
                     }}
                   />
                 </List.Item>

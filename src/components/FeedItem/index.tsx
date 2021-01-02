@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Skeleton, Switch, Card, Avatar, Space, Button } from "antd"
 import styled from "styled-components"
 import {
@@ -31,8 +31,8 @@ export type FeedItemProps = {
   avatar?: string
   like?: boolean
   likeLoading?: boolean
-  onLike?: () => void
-  onUnLike?: () => void
+  onLike?: () => Promise<void> | void
+  onUnLike?: () => Promise<void> | void
 }
 
 type IconTextProps = {
@@ -85,13 +85,29 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     like,
   } = props
 
-  const _onLike = () => {
-    onLike && onLike()
+  const [loading, setLoading] = useState(false)
+
+  const _onLike = async () => {
+    try {
+      setLoading(true)
+      onLike && (await onLike())
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const _onUnLike = () => {
-    onUnLike && onUnLike()
+  const _onUnLike = async () => {
+    try {
+      setLoading(true)
+      onUnLike && (await onUnLike())
+    } finally {
+      setLoading(false)
+    }
   }
+
+  useEffect(() => {
+    console.log(`Feed ID: ${id} Loading: `, loading)
+  }, [loading])
 
   return (
     <StyledCard
@@ -105,8 +121,8 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
           icon={like ? <LikeFilled /> : <LikeOutlined />}
           text={countlikes}
           key="list-vertical-like-o"
-          loading={props.likeLoading}
-          disabled={props.likeLoading}
+          loading={loading}
+          disabled={loading}
           onClick={!like ? _onLike : _onUnLike}
         />,
         <IconText
