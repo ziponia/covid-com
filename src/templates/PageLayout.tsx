@@ -23,7 +23,7 @@ const PageLayout: React.FC<Props> = (props) => {
     <>
       <Layout className="app-layout">
         {header && (
-          <Layout.Header className="app-header">
+          <Layout.Header className="app-header" style={{ padding: 24 }}>
             <Link href="/">
               <a className="logo" href="/">
                 코로나 커뮤니티

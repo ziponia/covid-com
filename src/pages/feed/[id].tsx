@@ -119,7 +119,8 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
                   />,
                 ]
               : []
-          }>
+          }
+          style={{ padding: 0 }}>
           <StyledDescriptions
             column={2}
             size="small"
