@@ -49,5 +49,9 @@ module.exports = {
     "react/jsx-one-expression-per-line": "off",
     "no-empty": "off",
     "consistent-return": "off",
+    "react/no-danger": "off",
+    "react/jsx-indent": "off",
+    camelcase: "off",
+    "react/jsx-curly-newline": "off",
   },
 }

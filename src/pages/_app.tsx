@@ -8,8 +8,8 @@ import { AppProps } from "next/dist/next-server/lib/router/router"
 import { RecoilRoot } from "recoil"
 import { Provider as AuthProvider } from "next-auth/client"
 
-import { AppCombineProps, defaultAppProps } from "../_app.interface"
-import PageLayout from "../templates/PageLayout"
+import { AppCombineProps, defaultAppProps } from "@covid/_app.interface"
+import PageLayout from "@covid/templates/PageLayout"
 
 import "antd/dist/antd.css"
 import "../styles/global.scss"

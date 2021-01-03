@@ -2,8 +2,6 @@ import prisma from "@covid/server/prisma"
 import { AppApiRequest } from "@covid/_app.interface"
 
 import { NextApiResponse } from "next"
-import { ListFeedResponse } from "@covid/service/feed.service"
-import { send } from "process"
 
 /**
  * 피드를 생성합니다.

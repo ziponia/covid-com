@@ -1,5 +1,11 @@
 import $http from "@covid/lib/client"
-import { Feed as IFeed, users as IUser, Likes, Screps } from "@prisma/client"
+import {
+  Feed as IFeed,
+  users as IUser,
+  Likes,
+  Screps,
+  Feed,
+} from "@prisma/client"
 
 export type FeedType = IFeed & {
   author: IUser
@@ -34,8 +40,10 @@ const create = async (payload: CreateFeedRequest) => {
   return $http.post<CreateFeedResponse>(`/api/feed`, payload)
 }
 
+export interface GetFeedResponse extends FeedType {}
+
 const get = async (id: number) => {
-  return $http.get(`/api/feed/${id}`)
+  return $http.get<GetFeedResponse>(`/api/feed/${id}`)
 }
 
 export interface LikeFeedResponse {
