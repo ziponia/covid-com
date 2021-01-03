@@ -90,6 +90,7 @@ const Comment: React.FC<CommentProps> = (props) => {
       refresh()
     }
     setLoading(false)
+    setComment("")
   }, [props.feedId, comment])
 
   const onPageChange = (page: number) => {

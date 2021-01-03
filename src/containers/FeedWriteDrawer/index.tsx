@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Button, Card, Divider, Drawer, Input, Spin, Tooltip } from "antd"
+import { Button, Card, Divider, Drawer, Input, Spin, Tooltip, Grid } from "antd"
 import { DrawerProps } from "antd/lib/drawer"
 import styled from "styled-components"
 import { FiArrowLeft, FiCheck } from "react-icons/fi"
@@ -7,12 +7,25 @@ import { FiArrowLeft, FiCheck } from "react-icons/fi"
 import Editor from "@covid/components/Editor"
 import feedService, { CreateFeedResponse } from "@covid/service/feed.service"
 
-const StyledContainer = styled(Card)`
+const { useBreakpoint } = Grid
+
+const StyledDrawer = styled(Drawer)<{
+  screens: ReturnType<typeof useBreakpoint>
+}>`
+  .ant-drawer-body {
+    ${(props) => props.screens.xs && `padding:0`}
+  }
+`
+
+const StyledContainer = styled(Card)<{
+  screens: ReturnType<typeof useBreakpoint>
+}>`
   margin: auto;
   border: 0;
 
   .post-create-title {
     margin-bottom: 20px;
+    ${(props) => props.screens.xs && `margin-bottom:0`}
   }
 
   .action-block {
@@ -27,6 +40,9 @@ const StyledContainer = styled(Card)`
       width: 100%;
     }
   }
+  .ant-card-body {
+    ${(props) => props.screens.xs && `padding:0`}
+  }
 `
 
 export type FeedWriteDrawerProps = DrawerProps & {
@@ -35,6 +51,7 @@ export type FeedWriteDrawerProps = DrawerProps & {
 }
 
 const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
+  const screens = useBreakpoint()
   const { children, onSaved, ...rest } = props
 
   const [feed, setFeed] = useState({
@@ -85,11 +102,13 @@ const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
   }
 
   return (
-    <Drawer {...rest}>
-      <StyledContainer>
+    <StyledDrawer screens={screens} {...rest}>
+      <StyledContainer screens={screens}>
         <Spin spinning={loading}>
           <Divider>글쓰기</Divider>
-          <div className="action-block">
+          <div
+            className="action-block"
+            style={{ padding: screens.xs ? 16 : 0 }}>
             <Tooltip title="뒤로가기">
               <Button
                 size="large"
@@ -115,14 +134,14 @@ const FeedWriteDrawer: React.FC<FeedWriteDrawerProps> = (props) => {
           <Input
             size="large"
             className="post-create-title"
-            placeholder="생각을 알려주세요 :)"
+            placeholder="제목을 입력하세요 :)"
             onChange={onChangeTitle}
             value={feed.title}
           />
           <Editor value={feed.content} onChange={onChangeContent} />
         </Spin>
       </StyledContainer>
-    </Drawer>
+    </StyledDrawer>
   )
 }
 

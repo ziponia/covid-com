@@ -179,7 +179,9 @@ const IndexPage: AppPageProps<Props> = (props) => {
               itemLayout="vertical"
               size="large"
               renderItem={(item) => (
-                <List.Item key={item.id} style={{ marginBottom: 10 }}>
+                <List.Item
+                  key={item.id}
+                  style={{ marginBottom: 10, padding: screens.xs ? 0 : 16 }}>
                   <FeedItem
                     id={item.id}
                     title={item.title}
