@@ -4,7 +4,12 @@ const _log: any[] = []
 
 // process.env.NODE_ENV !== "production" && _log.push("query")
 
-const prisma = new PrismaClient({
-  log: _log,
-})
-export default prisma
+let prisma: PrismaClient | null = null
+
+if (!prisma) {
+  console.log("[Database Connection] Install")
+  prisma = new PrismaClient({
+    log: _log,
+  })
+}
+export default prisma!

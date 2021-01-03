@@ -1,5 +1,6 @@
 import prisma from "@covid/server/prisma"
 import { AppApiRequest } from "@covid/_app.interface"
+import Joi from "joi"
 
 import { NextApiResponse } from "next"
 
@@ -116,40 +117,44 @@ const likes = async (req: AppApiRequest, res: NextApiResponse) => {
     })
   }
 
-  const likeFeed = await prisma.likes.create({
-    data: {
-      author: {
-        connect: {
-          id: user.id,
+  try {
+    const likeFeed = await prisma.likes.create({
+      data: {
+        author: {
+          connect: {
+            id: user.id,
+          },
+        },
+        feed: {
+          connect: {
+            id: feedId,
+          },
         },
       },
-      feed: {
-        connect: {
-          id: parseInt(feedId as string, 10),
-        },
+    })
+
+    const countOfFeedLikes = await prisma.likes.count({
+      where: {
+        feedId,
       },
-    },
-  })
+    })
 
-  const countOfFeedLikes = await prisma.likes.count({
-    where: {
-      feedId: parseInt(feedId as string, 10),
-    },
-  })
+    await prisma.feed.update({
+      data: {
+        likes: countOfFeedLikes,
+      },
+      where: {
+        id: feedId,
+      },
+    })
 
-  await prisma.feed.update({
-    data: {
-      likes: countOfFeedLikes,
-    },
-    where: {
-      id: parseInt(feedId as string, 10),
-    },
-  })
-
-  return res.send({
-    Likes: likeFeed,
-    countOfFeedLikes,
-  })
+    return res.send({
+      Likes: likeFeed,
+      countOfFeedLikes,
+    })
+  } catch (e) {
+    return res.status(500).send(e.message)
+  }
 }
 
 /**
