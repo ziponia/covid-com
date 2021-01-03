@@ -292,6 +292,58 @@ const unscreps = async (req: AppApiRequest, res: NextApiResponse) => {
   })
 }
 
+/**
+ * 피드를 삭제합니다.
+ */
+const remove = async (req: AppApiRequest, res: NextApiResponse) => {
+  if (!req.user) {
+    return res.status(401).send({
+      message: "required authentication",
+    })
+  }
+
+  const schema = Joi.object({
+    feedId: Joi.number().required(),
+  })
+
+  try {
+    const validate = await schema.validateAsync(req.body)
+    // check my feed
+    const prevFeed = await prisma.feed.findUnique({
+      where: {
+        id: validate.feedId,
+      },
+      select: {
+        authorId: true,
+      },
+    })
+
+    if (!prevFeed) {
+      return res.status(404).send({
+        message: `${validate.feedId} is not found`,
+      })
+    }
+
+    if (prevFeed.authorId !== req.user.id) {
+      return res.status(403).send({
+        message: `${validate.feedId} is not found`,
+      })
+    }
+
+    const removeFeed = await prisma.$queryRaw`
+      delete from Feed where id = ${validate.feedId}
+    `
+
+    return res.status(200).send({
+      message: "success",
+    })
+  } catch (e) {
+    console.error(e)
+    return res.status(400).send(e.details)
+  } finally {
+  }
+}
+
 export default {
   create,
   list,
@@ -300,4 +352,5 @@ export default {
   unlikes,
   screps,
   unscreps,
+  remove,
 }

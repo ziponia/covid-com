@@ -46,7 +46,6 @@ const useComments = (options: ListCommentRequest) => {
 
 export type CommentProps = {
   feedId: number
-  value: string
 }
 
 const Comment: React.FC<CommentProps> = (props) => {

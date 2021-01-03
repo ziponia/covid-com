@@ -98,6 +98,13 @@ const unscreps = async (payload: UnScrepFeedRequest) => {
   return $http.post<UnScrepFeedResponse>(`/api/feed/unscreps`, payload)
 }
 
+export interface RemoveFeedRequest {
+  feedId: number
+}
+const remove = async (payload: RemoveFeedRequest) => {
+  return $http.post(`/api/feed/_delete`, payload)
+}
+
 export default {
   list,
   create,
@@ -106,4 +113,5 @@ export default {
   unlikes,
   screps,
   unscreps,
+  remove,
 }
