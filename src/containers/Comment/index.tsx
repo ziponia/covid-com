@@ -46,6 +46,7 @@ const useComments = (options: ListCommentRequest) => {
 
 export type CommentProps = {
   feedId: number
+  value: string
 }
 
 const Comment: React.FC<CommentProps> = (props) => {
@@ -90,6 +91,7 @@ const Comment: React.FC<CommentProps> = (props) => {
       refresh()
     }
     setLoading(false)
+    setComment("")
   }, [props.feedId, comment])
 
   const onPageChange = (page: number) => {
