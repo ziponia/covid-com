@@ -29,7 +29,14 @@ const Editor: React.FC<EditorProps> = (props) => {
     if (onChange) onChange(text)
   }
 
-  return <StyledEditor value={value} onChange={_onChange} theme="snow" />
+  return (
+    <StyledEditor
+      placeholder="당신의 생각을 알려주세요:)"
+      value={value}
+      onChange={_onChange}
+      theme="snow"
+    />
+  )
 }
 
 Editor.defaultProps = {
