@@ -52,7 +52,7 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
           <div dangerouslySetInnerHTML={{ __html: feed.content }} />
         </Layout.Content>
         <Divider />
-        <Comment />
+        <Comment feedId={feed.id} />
       </StyledLayout>
     </>
   )

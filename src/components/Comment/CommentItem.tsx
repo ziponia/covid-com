@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { Comment as AntComment } from "antd"
+import { Comment as AntComment, Popconfirm } from "antd"
 import TextArea from "antd/lib/input/TextArea"
 
 export type CommentItemProps = {
@@ -8,7 +8,8 @@ export type CommentItemProps = {
   content?: string
   datetime?: string
   me?: boolean
-  onUpdateComplete?: () => void
+  onUpdateComplete?: (content: string) => void
+  onDeleteComplete?: () => void
 }
 
 const CommentItem: React.FC<CommentItemProps> = (props) => {
@@ -20,7 +21,9 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
   }
 
   const onUpdateComplete = () => {
+    const { onUpdateComplete } = props
     setMode("default")
+    if (onUpdateComplete) onUpdateComplete(_content || "")
   }
 
   const onUpdateCancel = () => {
@@ -30,6 +33,11 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value)
+  }
+
+  const onDeleteComplete = () => {
+    const { onDeleteComplete } = props
+    if (onDeleteComplete) onDeleteComplete()
   }
 
   const Actions = () => {
@@ -48,7 +56,14 @@ const CommentItem: React.FC<CommentItemProps> = (props) => {
         <span key="comment-update" onClick={handleUpdate}>
           수정
         </span>,
-        <span key="comment-delete">삭제</span>,
+        <Popconfirm
+          key="comment-delete-pop"
+          title="정말 삭제하시겠어요? 🥲"
+          okText="네"
+          cancelText="놉"
+          onConfirm={onDeleteComplete}>
+          <span key="comment-delete">삭제</span>
+        </Popconfirm>,
       ]
     }
   }

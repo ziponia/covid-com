@@ -1,36 +1,57 @@
 import React from "react"
 import { Layout, List, Comment as AntComment, Divider } from "antd"
 import styled from "styled-components"
+import { CommentWithUser } from "@covid/service/comment.service"
+import dayjs from "dayjs"
+
 import CommentItem from "./CommentItem"
 
-const StyledList = styled(List)``
-
 export type CommentListProps = {
-  comments: any[] // ...TODO type definition
+  comments: CommentWithUser[] // ...TODO type definition
   total?: number
+  pagesize?: number
+  loading?: boolean
+  feedId: number
+  currentUserId?: number
+  onChangePage?: (page: number) => void
+  onUpdateComplete?: (commentId: string, content: string) => void
+  onDeleteComplete?: (commentId: string) => void
 }
 
 const CommentList: React.FC<CommentListProps> = (props) => {
+  const onUpdateComplete = (commentId: string, content: string) => {
+    const { onUpdateComplete } = props
+    if (onUpdateComplete) onUpdateComplete(commentId, content)
+  }
+
+  const onDeleteComplete = (commentId: string) => {
+    const { onDeleteComplete } = props
+    if (onDeleteComplete) onDeleteComplete(commentId)
+  }
+
   return (
     <Layout.Content>
-      <StyledList
+      <List<CommentWithUser>
         className="comment-list"
+        loading={props.loading}
         header={`${props.total} 댓글`}
         itemLayout="horizontal"
-        dataSource={new Array(100).fill(true)}
+        dataSource={props.comments}
         pagination={{
-          onChange: console.log,
-          pageSize: 10,
+          onChange: props.onChangePage,
+          pageSize: props.pagesize,
           total: props.total,
         }}
         renderItem={(item) => (
-          <li>
+          <li key={item.id}>
             <CommentItem
-              author="kuby"
-              avatar="http://k.kakaocdn.net/dn/cf2MB9/btqRvaRjcE0/SZFR9dl42XkSuQkqBAXDck/img_640x640.jpg"
-              content="그러게요 ㅠㅠ 다른건 아닌데 마스크가 젤 싫어.."
-              datetime="2020. 12. 22. 13:22"
-              me
+              author={item.user.name || "알수없음"}
+              avatar={item.user.image || "A"}
+              content={item.content}
+              datetime={dayjs(item.created_at).format("YYYY. MM. DD. hh:mm")}
+              me={props.currentUserId === item.userId}
+              onUpdateComplete={(content) => onUpdateComplete(item.id, content)}
+              onDeleteComplete={() => onDeleteComplete(item.id)}
             />
             <Divider />
           </li>

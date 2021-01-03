@@ -51,5 +51,7 @@ module.exports = {
     "consistent-return": "off",
     "react/no-danger": "off",
     "react/jsx-indent": "off",
+    camelcase: "off",
+    "react/jsx-curly-newline": "off",
   },
 }

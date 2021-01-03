@@ -149,11 +149,11 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
           disabled={loading}
           onClick={!like ? _onLike : _onUnLike}
         />,
-        <IconText
-          icon={<MessageOutlined />}
-          text="2"
-          key="list-vertical-message"
-        />,
+        // <IconText
+        //   icon={<MessageOutlined />}
+        //   text="2"
+        //   key="list-vertical-message"
+        // />,
       ]}>
       <Skeleton loading={false} avatar active>
         <Meta

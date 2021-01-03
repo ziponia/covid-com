@@ -10,8 +10,6 @@ const userMiddleware = async (
   res: NextApiResponse,
   next: NextHandler,
 ) => {
-  console.log("user.middleware")
-
   const session = await getSession({ req })
 
   let user: users | null = null
