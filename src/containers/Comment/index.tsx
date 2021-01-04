@@ -54,7 +54,7 @@ const Comment: React.FC<CommentProps> = (props) => {
   const [comment, setComment] = useState("")
   const [req, setReq] = useState({
     page: 1,
-    size: 20,
+    size: 10,
   })
 
   const [loading, setLoading] = useState(false)
