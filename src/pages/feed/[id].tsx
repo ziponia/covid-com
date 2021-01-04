@@ -7,11 +7,11 @@ import {
   Layout,
   Descriptions,
   Avatar,
-  Statistic,
   Button,
   Modal,
   Result,
   message,
+  notification,
 } from "antd"
 import styled from "styled-components"
 import { useRouter } from "next/router"
@@ -24,6 +24,8 @@ import {
   StarOutlined,
   DeleteOutlined,
   EditOutlined,
+  StarFilled,
+  LikeFilled,
 } from "@ant-design/icons"
 
 const StyledLayout = styled(Layout)`
@@ -60,11 +62,17 @@ type Props = {
 }
 
 const FeedDetailPage: AppPageProps<Props> = (props) => {
-  const { feed } = props
   const router = useRouter()
   const [session] = useSession()
+  const [feed, setFeed] = useState<GetFeedResponse | undefined>(props.feed)
 
   const [deleteModal, setDeleteModal] = useState(false)
+  const [loadingScrep, setLoadingScrep] = useState(false)
+  const [loadingLike, setLoadingLike] = useState(false)
+
+  const loggedIn = session && session.user
+  const isScrep = loggedIn && feed && feed.Screps.length > 0
+  const isLike = loggedIn && feed && feed.Likes.length > 0
 
   if (!feed) {
     // ...TODO Skeleton
@@ -88,6 +96,78 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
     message.info({
       content: "수정 기능은 아직 개발중이에요 🥲\n조금만 기다려 주세요.",
     })
+  }
+
+  const 로그인이_필요함 = () => {
+    notification.warn({
+      message: "로그인이 필요해요. 🥲",
+    })
+  }
+
+  const _onScrep = async () => {
+    if (!feed || !loggedIn) {
+      return 로그인이_필요함()
+    }
+
+    try {
+      setLoadingScrep(true)
+      if (isScrep) {
+        const { data } = await feedService.unscreps({
+          screpId: feed.Screps[0].id,
+          feedId: feed.id,
+        })
+
+        setFeed({
+          ...feed,
+          screps: data.countOfFeedScreps,
+          Screps: [],
+        })
+      } else {
+        const { data } = await feedService.screps({
+          feedId: feed.id,
+        })
+        setFeed({
+          ...feed,
+          screps: data.countOfFeedScreps,
+          Screps: [data.Screps],
+        })
+      }
+    } finally {
+      setLoadingScrep(false)
+    }
+  }
+
+  const _onLike = async () => {
+    if (!feed || !loggedIn) {
+      return 로그인이_필요함()
+    }
+    try {
+      setLoadingLike(true)
+      if (isLike) {
+        const { data } = await feedService.unlikes({
+          feedId: feed.id,
+          likeId: feed.Likes[0].id,
+        })
+
+        setFeed({
+          ...feed,
+          Likes: [],
+          likes: data.countOfFeedLikes,
+        })
+      } else {
+        const { data } = await feedService.likes({
+          feedId: feed.id,
+        })
+
+        setFeed({
+          ...feed,
+          Likes: [data.Likes],
+          likes: data.countOfFeedLikes,
+        })
+      }
+    } finally {
+      setLoadingLike(false)
+    }
   }
 
   const isPermission = session && session.user.id === feed.authorId
@@ -135,18 +215,21 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
           </StyledDescriptions>
           <StyledDescriptions size="small" column={2}>
             <Descriptions.Item>
-              <Statistic
-                style={{ marginRight: 10 }}
-                title="스크랩"
-                value={feed.screps}
-                prefix={<StarOutlined />}
-              />
-              <hr style={{ margin: 20 }} />
-              <Statistic
-                title="공감"
-                value={feed.likes}
-                prefix={<LikeOutlined />}
-              />
+              <Button
+                loading={loadingScrep}
+                onClick={_onScrep}
+                icon={isScrep ? <StarFilled /> : <StarOutlined />}
+                type="text">
+                스크랩 {feed.screps}
+              </Button>
+              {/* <hr style={{ margin: 20 }} /> */}
+              <Button
+                loading={loadingLike}
+                icon={isLike ? <LikeFilled /> : <LikeOutlined />}
+                onClick={_onLike}
+                type="text">
+                공감 {feed.likes}
+              </Button>
             </Descriptions.Item>
             <Descriptions.Item>
               <div className="date-feed">

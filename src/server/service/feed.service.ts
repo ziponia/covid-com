@@ -90,14 +90,26 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
 const get = async (req: AppApiRequest, res: NextApiResponse) => {
   const { id } = req.query
 
+  const { user } = req
+
+  const logged = !!user
+
   const feed = await prisma.feed.findUnique({
     where: {
       id: parseInt(id as string, 10),
     },
     include: {
       author: true,
-      Likes: true,
-      Screps: true,
+      Likes: {
+        where: {
+          authorId: logged ? user?.id : -1,
+        },
+      },
+      Screps: {
+        where: {
+          authorId: logged ? user?.id : -1,
+        },
+      },
     },
   })
 
