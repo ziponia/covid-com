@@ -93,9 +93,10 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
   }
 
   const _onEditClick = async () => {
-    message.info({
-      content: "수정 기능은 아직 개발중이에요 🥲\n조금만 기다려 주세요.",
-    })
+    router.push(`/feed/update/${feed.id}`)
+    // message.info({
+    //   content: "수정 기능은 아직 개발중이에요 🥲\n조금만 기다려 주세요.",
+    // })
   }
 
   const 로그인이_필요함 = () => {
