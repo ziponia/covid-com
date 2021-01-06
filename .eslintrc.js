@@ -54,5 +54,6 @@ module.exports = {
     camelcase: "off",
     "react/jsx-curly-newline": "off",
     "import/no-mutable-exports": "off",
+    "react/display-name": "off",
   },
 }

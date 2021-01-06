@@ -9,9 +9,11 @@ import feedService, { CreateFeedResponse } from "@covid/service/feed.service"
 
 const { useBreakpoint } = Grid
 
-const StyledDrawer = styled(Drawer)<{
+type StyledContainerProps = FeedWriteDrawerProps & {
   screens: ReturnType<typeof useBreakpoint>
-}>`
+}
+
+const StyledDrawer = styled(Drawer)<StyledContainerProps>`
   .ant-drawer-body {
     ${(props) => props.screens.xs && `padding:0`}
   }

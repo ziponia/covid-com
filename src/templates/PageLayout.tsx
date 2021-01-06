@@ -13,11 +13,11 @@ const PageLayout: React.FC<Props> = (props) => {
   const { children, pageTitle, pageSubTitle, header } = props
   const [session, loading] = useSession()
 
-  const _signOut = () => {
-    signOut({
-      callbackUrl: window.location.href,
-    })
-  }
+  // const _signOut = () => {
+  //   signOut({
+  //     callbackUrl: window.location.href,
+  //   })
+  // }
 
   return (
     <>
@@ -38,11 +38,20 @@ const PageLayout: React.FC<Props> = (props) => {
                 </Tooltip>
               </Button>
             )}
-            {!!session && (
+            {/* {!!session && (
               <Tooltip title="Sign-Out">
                 <a onClick={_signOut}>
                   <Avatar src={session?.user.image} />
                 </a>
+              </Tooltip>
+            )} */}
+            {!!session && (
+              <Tooltip title="My Page">
+                <Link href="/user/mypage">
+                  <a>
+                    <Avatar src={session?.user.image} />
+                  </a>
+                </Link>
               </Tooltip>
             )}
           </Layout.Header>

@@ -5,22 +5,26 @@ import styled from "styled-components"
 import "react-quill/dist/quill.snow.css"
 import "react-quill/dist/quill.bubble.css"
 import "react-quill/dist/quill.core.css"
+import TitleInput from "./TitleInput"
+
+export { TitleInput }
 
 const StyledEditor = styled(ReactQuill)`
   background-color: #fff;
-  margin: auto;
 
   .ql-editor {
     min-height: 500px;
+    font-size: 16px;
   }
 `
 
 export type EditorProps = {
   value?: string
+  theme?: "snow" | "bubble"
   onChange?: (text: string) => void
 }
 
-const Editor: React.FC<EditorProps> = (props) => {
+const _Editor: React.FC<EditorProps> = (props) => {
   const [value, setValue] = useState(props.value || "")
 
   const _onChange = (text: string) => {
@@ -34,13 +38,18 @@ const Editor: React.FC<EditorProps> = (props) => {
       placeholder="당신의 생각을 알려주세요:)"
       value={value}
       onChange={_onChange}
-      theme="snow"
+      theme={props.theme}
     />
   )
 }
 
-Editor.defaultProps = {
+_Editor.defaultProps = {
   value: "",
+  theme: "snow",
 }
+
+const Editor = Object.assign(_Editor, {
+  TitleInput,
+})
 
 export default Editor
