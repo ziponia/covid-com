@@ -1,5 +1,12 @@
-import React from "react"
-import { providers, useSession, signOut, signIn } from "next-auth/client"
+import React, { useState, useEffect } from "react"
+import {
+  providers,
+  useSession,
+  signOut,
+  signIn,
+  Session,
+  getSession,
+} from "next-auth/client"
 import {
   Avatar,
   Row,
@@ -13,11 +20,21 @@ import {
   Grid,
   List,
   Divider,
+  Input,
+  AutoComplete,
 } from "antd"
-import { LockOutlined, FieldTimeOutlined } from "@ant-design/icons"
+import {
+  LockOutlined,
+  FieldTimeOutlined,
+  HomeOutlined,
+} from "@ant-design/icons"
 
 import styled from "styled-components"
 import { AppLayoutProps, AppPageProps } from "@covid/_app.interface"
+import { useRouter } from "next/router"
+import userService, {
+  UpdateUserInfoResponse,
+} from "@covid/service/user.service"
 import MyPageTemplate from "../../templates/MyPageTemplate"
 
 const data = [
@@ -104,7 +121,9 @@ const StyledButton = styled(Button)`
   font-size: 12;
   color: #fff;
 `
-type Props = {}
+type Props = {
+  session?: Session | null | undefined
+}
 
 const MyPage: AppPageProps<Props> = (props) => {
   const { providers } = props
@@ -112,6 +131,11 @@ const MyPage: AppPageProps<Props> = (props) => {
   const screens = useBreakpoint()
   const isMobileScreen = screens.xs && !screens.md
   const [session, loading] = useSession()
+
+  const defaultName = session?.user.name
+  const [userName, setUserName] = useState(defaultName || "")
+
+  useEffect(() => {}, [userName])
 
   const callback = (key: any) => {
     console.log(key)
@@ -122,14 +146,41 @@ const MyPage: AppPageProps<Props> = (props) => {
       callbackUrl: "/",
     })
   }
+  const onSave = async (name: String) => {
+    try {
+      const { data } = await userService.update({
+        name,
+      })
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
+  const editUserName = (e: any) => {
+    const changeName = e.target.value
+    setUserName(changeName)
+  }
+
+  const savaUserName = (e: any) => {
+    const changeName = e.target.value
+    if (defaultName !== changeName) {
+      onSave(changeName)
+    }
+  }
 
   return (
     <Row style={{ flex: 1 }}>
       <StyledContent screens={screens}>
         <div className="my_header">
           <Row style={{ padding: "24px" }}>
+            <Col span={12}>
+              <a href="/">
+                <HomeOutlined style={{ fontSize: "24px", color: "#fff" }} />
+              </a>
+            </Col>
             <Col
-              offset={!isMobileScreen ? 22 : 18}
+              offset={!isMobileScreen ? 10 : 6}
               span={!isMobileScreen ? 2 : 6}>
               <StyledButton onClick={_signOut} style={{}}>
                 <LockOutlined /> 로그아웃
@@ -196,7 +247,7 @@ const MyPage: AppPageProps<Props> = (props) => {
                   )}
                 />
               </TabPane>
-              <TabPane tab="스크랩" key="2">
+              <TabPane tab="내가 쓴 댓글" key="2">
                 <List
                   itemLayout="horizontal"
                   dataSource={data}
@@ -219,7 +270,30 @@ const MyPage: AppPageProps<Props> = (props) => {
                   )}
                 />
               </TabPane>
-              <TabPane tab="내 정보" key="3">
+              <TabPane tab="스크랩" key="3">
+                <List
+                  itemLayout="horizontal"
+                  dataSource={data}
+                  pagination={{
+                    onChange: (page) => {
+                      console.log(page)
+                    },
+                    pageSize: 5,
+                  }}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        avatar={
+                          <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                        }
+                        title={<a href="https://ant.design">{item.title}</a>}
+                        description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                      />
+                    </List.Item>
+                  )}
+                />
+              </TabPane>
+              <TabPane tab="내 정보" key="4">
                 <Card
                   style={{
                     width: "100%",
@@ -242,7 +316,18 @@ const MyPage: AppPageProps<Props> = (props) => {
                       <Avatar size={64} src={session?.user.image} />
                     </Col>
                     <Col offset={0} span={24}>
-                      {session?.user.name}
+                      <Input
+                        // defaultValue={session?.user.name}
+                        value={userName}
+                        placeholder="Basic usage"
+                        onChange={editUserName}
+                        onBlur={savaUserName}
+                        style={{
+                          border: "1px solid transparent",
+                          width: "auto",
+                          textAlign: "center",
+                        }}
+                      />
                     </Col>
                   </Row>
                 </Card>
@@ -257,11 +342,13 @@ const MyPage: AppPageProps<Props> = (props) => {
 
 MyPage.Layout = MyPageTemplate
 
-MyPage.getInitialProps = async (context) => {
+MyPage.getInitialProps = async (ctx) => {
+  const session = await getSession(ctx)
   return {
     // @ts-ignore
     providers: await providers(),
     sidebar: false,
+    session,
   }
 }
 export default MyPage
