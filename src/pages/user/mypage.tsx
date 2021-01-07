@@ -122,12 +122,10 @@ const StyledButton = styled(Button)`
   color: #fff;
 `
 type Props = {
-  session?: Session | null | undefined
+  session?: Session | null
 }
 
 const MyPage: AppPageProps<Props> = (props) => {
-  const { providers } = props
-
   const screens = useBreakpoint()
   const isMobileScreen = screens.xs && !screens.md
   const [session, loading] = useSession()
@@ -158,12 +156,12 @@ const MyPage: AppPageProps<Props> = (props) => {
   }
 
   const editUserName = (e: any) => {
-    const changeName = e.target.value
+    const { value: changeName } = e.target
     setUserName(changeName)
   }
 
   const savaUserName = (e: any) => {
-    const changeName = e.target.value
+    const { value: changeName } = e.target
     if (defaultName !== changeName) {
       onSave(changeName)
     }

@@ -1,13 +1,13 @@
 import $http from "@covid/lib/client"
 
 export interface UpdateUserInfoRequest {
-  name: String
+  name: string
 }
 
 export interface UpdateUserInfoResponse {}
 
 const update = async (payload: UpdateUserInfoRequest) => {
-  return $http.post<UpdateUserInfoResponse>(`/api/user`, payload)
+  return $http.put<UpdateUserInfoResponse>(`/api/user`, payload)
 }
 
 export default {
