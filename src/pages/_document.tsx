@@ -14,8 +14,8 @@ class MyDocument extends Document<any> {
           />
           <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.3/themes/blue/pace-theme-material.min.css"
-            integrity="sha512-aCGiaUpKzBVHwrjQ6e9wvq5CzYiILfhWm7xNfabuCwAtTzzM8vaKK6m85bvjAB7d4WsMH/BIWZRrDWhq+BB53w=="
+            href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.3/themes/purple/pace-theme-minimal.min.css"
+            integrity="sha512-8ZRc45LBTTet35eaJ/mj213X+yUigGkILUABYLYAWZ+QoTfNB2Kvnbq8A9KmSa39+rj6gS6lKDVo7Jqx8M7V8A=="
             crossOrigin="anonymous"
           />
           <style />

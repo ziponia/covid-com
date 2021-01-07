@@ -105,6 +105,18 @@ const remove = async (payload: RemoveFeedRequest) => {
   return $http.post(`/api/feed/_delete`, payload)
 }
 
+export interface UpdateFeedRequest {
+  feedId: number
+  title: string
+  content: string
+}
+
+export interface UpdateFeedResponse {}
+
+const update = async (payload: UpdateFeedRequest) => {
+  return $http.put(`/api/feed`, payload)
+}
+
 export default {
   list,
   create,
@@ -114,4 +126,5 @@ export default {
   screps,
   unscreps,
   remove,
+  update,
 }

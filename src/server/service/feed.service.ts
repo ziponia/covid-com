@@ -356,6 +356,61 @@ const remove = async (req: AppApiRequest, res: NextApiResponse) => {
   }
 }
 
+const update = async (req: AppApiRequest, res: NextApiResponse) => {
+  if (!req.user) {
+    return res.status(401).send({
+      message: "required authentication",
+    })
+  }
+
+  const schema = Joi.object({
+    content: Joi.string().required(),
+    title: Joi.string().required(),
+    feedId: Joi.number().required(),
+  })
+
+  try {
+    const validate = await schema.validateAsync(req.body)
+
+    const getFeed = await prisma.feed.findUnique({
+      where: {
+        id: validate.feedId,
+      },
+      select: {
+        authorId: true,
+        id: true,
+      },
+    })
+
+    if (!getFeed) {
+      return res.status(400).send({
+        message: `Feed: ${validate.feedId} Not Found`,
+      })
+    }
+
+    if (getFeed.authorId !== req.user.id) {
+      return res.status(401).send({
+        message: "Access Denied",
+      })
+    }
+
+    const updateFeed = await prisma.feed.update({
+      data: {
+        title: validate.title,
+        content: validate.content,
+      },
+      where: {
+        id: validate.feedId,
+      },
+    })
+
+    return res.send(updateFeed)
+  } catch (e) {
+    return res.status(403).send(e.details)
+  } finally {
+  }
+}
+
 export default {
   create,
   list,
@@ -365,4 +420,5 @@ export default {
   screps,
   unscreps,
   remove,
+  update,
 }
