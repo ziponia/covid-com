@@ -23,6 +23,8 @@ export interface ListFeedResponse {
 export interface ListFeedRequest {
   cursor?: number
   size?: number
+  authorId?: number
+  page?: number
 }
 
 const list = async (params?: ListFeedRequest) => {
