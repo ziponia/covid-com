@@ -34,9 +34,10 @@ const create = async (req: AppApiRequest, res: NextApiResponse) => {
  * 피드 리스트를 출력합니다.
  */
 const list = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { cursor, size = "20" } = req.query
+  const { cursor, size = "20", authorId, page } = req.query
 
   const _cursor = cursor ? parseInt(cursor as string, 10) : -1
+  const _page = page ? parseInt(page as string, 10) : -1
 
   try {
     const totalElements = await prisma.feed.count()
@@ -54,7 +55,11 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       orderBy: {
         id: "desc",
       },
+      skip: _page > -1 ? _page * 10 : undefined,
       take: parseInt(size as string, 10),
+      where: {
+        authorId: parseInt(authorId as string, 10) || undefined,
+      },
       include: {
         author: true,
         Likes: {
