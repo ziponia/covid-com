@@ -144,7 +144,7 @@ const MyPage: AppPageProps<Props> = (props) => {
       callbackUrl: "/",
     })
   }
-  const onSave = async (name: String) => {
+  const onSave = async (name: string) => {
     try {
       const { data } = await userService.update({
         name,
