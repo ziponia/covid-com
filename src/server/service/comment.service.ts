@@ -53,9 +53,11 @@ const create = async (req: AppApiRequest, res: NextApiResponse) => {
  */
 const list = async (req: AppApiRequest, res: NextApiResponse) => {
   const schema = Joi.object({
-    feedId: Joi.number().required(),
+    feedId: Joi.number(),
     size: Joi.number().default(20),
     page: Joi.number().default(1),
+    userId: Joi.number(),
+    _includeFeed: Joi.bool(),
   })
 
   try {
@@ -66,11 +68,13 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       },
       where: {
         feedId: validate.feedId,
+        userId: validate.userId,
       },
       skip: (validate.page - 1) * 10,
       take: validate.size,
       include: {
         user: true,
+        feed: validate._includeFeed,
       },
     })
 

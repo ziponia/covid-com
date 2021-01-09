@@ -20,6 +20,7 @@ import {
   Divider,
   Input,
   AutoComplete,
+  Skeleton,
 } from "antd"
 import {
   LockOutlined,
@@ -33,6 +34,10 @@ import userService from "@covid/service/user.service"
 import feedService, { ListFeedResponse } from "@covid/service/feed.service"
 import MyPageTemplate from "@covid/templates/MyPageTemplate"
 import htmlToString from "@covid/lib/htmlToString"
+import commentService, {
+  ListCommentResponse,
+} from "@covid/service/comment.service"
+import dayjs from "dayjs"
 
 const data = [
   {
@@ -131,6 +136,9 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [userName, setUserName] = useState(defaultName || "")
   const [myFeeds, setMyFeeds] = useState<ListFeedResponse>()
   const [myFeedPage, setMyFeedPage] = useState(0)
+  const [loadingMyFeed, setLoadingMyFeed] = useState(false)
+  const [myComments, setMyComments] = useState<ListCommentResponse>()
+  const [myCommentPage, setMyCommentPage] = useState(0)
 
   useEffect(() => {}, [userName])
 
@@ -167,16 +175,36 @@ const MyPage: AppPageProps<Props> = (props) => {
   }
 
   const 내가_쓴_글_리스트 = async (page: number) => {
-    const { data } = await feedService.list({
-      authorId: session?.user.id,
-      page,
-    })
-    setMyFeeds(data)
+    try {
+      setLoadingMyFeed(true)
+      const { data } = await feedService.list({
+        authorId: session?.user.id,
+        page,
+      })
+      setMyFeeds(data)
+    } finally {
+      setLoadingMyFeed(false)
+    }
+  }
+
+  const 나의_코멘트_리스트 = async (page: number) => {
+    try {
+      const { data } = await commentService.list({
+        userId: session?.user.id,
+        _includeFeed: true,
+      })
+      setMyComments(data)
+    } finally {
+    }
   }
 
   useEffect(() => {
     내가_쓴_글_리스트(myFeedPage)
   }, [myFeedPage])
+
+  useEffect(() => {
+    나의_코멘트_리스트(myCommentPage)
+  }, [myCommentPage])
 
   return (
     <Row style={{ flex: 1 }}>
@@ -234,46 +262,55 @@ const MyPage: AppPageProps<Props> = (props) => {
           <StyledTabs screens={screens}>
             <Tabs defaultActiveKey="1" onChange={callback}>
               <TabPane tab="내가 쓴 글" key="1">
-                <List
-                  itemLayout="horizontal"
-                  dataSource={myFeeds?.items || []}
-                  pagination={{
-                    onChange: setMyFeedPage,
-                    pageSize: 20,
-                  }}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        avatar={<Avatar src={item.author.image} />}
-                        title={
-                          <Link href={`/feed/${item.id}`}>
-                            <a href={`/feed/${item.id}`}>{item.title}</a>
-                          </Link>
-                        }
-                        description={htmlToString(item.content)}
-                      />
-                    </List.Item>
-                  )}
-                />
+                <Skeleton loading={loadingMyFeed}>
+                  <List
+                    itemLayout="horizontal"
+                    dataSource={myFeeds?.items || []}
+                    pagination={{
+                      onChange: setMyFeedPage,
+                      pageSize: 20,
+                    }}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={<Avatar src={item.author.image} />}
+                          title={
+                            <Link href={`/feed/${item.id}`}>
+                              <a href={`/feed/${item.id}`}>{item.title}</a>
+                            </Link>
+                          }
+                          description={htmlToString(item.content)}
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </Skeleton>
               </TabPane>
               <TabPane tab="내가 쓴 댓글" key="2">
                 <List
                   itemLayout="horizontal"
-                  dataSource={data}
+                  dataSource={myComments?.items || []}
                   pagination={{
-                    onChange: (page) => {
-                      console.log(page)
-                    },
-                    pageSize: 5,
+                    onChange: setMyCommentPage,
+                    pageSize: 20,
                   }}
                   renderItem={(item) => (
-                    <List.Item>
+                    <List.Item
+                      actions={[
+                        <time key="comment-create-at">
+                          {dayjs(item.created_at).format("YYYY. MM. DD. hh:mm")}
+                        </time>,
+                      ]}>
                       <List.Item.Meta
-                        avatar={
-                          <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                        avatar={<Avatar src={item.user.image} />}
+                        title={
+                          <Link href={`/feed/${item.feed?.id}`}>
+                            <a href={`/feed/${item.feed?.id}`}>
+                              {item.content}
+                            </a>
+                          </Link>
                         }
-                        title={<a href="https://ant.design">{item.title}</a>}
-                        description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                        description={item.feed?.title}
                       />
                     </List.Item>
                   )}
