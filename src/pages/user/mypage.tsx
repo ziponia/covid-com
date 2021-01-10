@@ -41,6 +41,8 @@ import commentService, {
   ListCommentResponse,
 } from "@covid/service/comment.service"
 import dayjs from "dayjs"
+import AWS from "aws-sdk"
+import { UploadChangeParam, UploadFile } from "antd/lib/upload/interface"
 
 import userService, {
   UpdateUserInfoResponse,
@@ -49,7 +51,6 @@ import fileuploadService from "@covid/server/service/fileupload.service"
 import MyPageTemplate from "../../templates/MyPageTemplate"
 import DefaultModal from "../../components/Modal"
 import FileUpload from "../../components/FileUpload"
-import AWS from "aws-sdk"
 
 const data = [
   {
@@ -153,7 +154,7 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [loadingMyFeed, setLoadingMyFeed] = useState(false)
   const [myComments, setMyComments] = useState<ListCommentResponse>()
   const [myCommentPage, setMyCommentPage] = useState(0)
-  const [fileList, setFileList] = useState()
+  const [fileList, setFileList] = useState<UploadChangeParam>()
   // const [file, setFile] = useState()
 
   useEffect(() => {}, [userName])
@@ -192,19 +193,17 @@ const MyPage: AppPageProps<Props> = (props) => {
   const showModal = () => {
     setVisible(true)
   }
-  const handleOk = async (info: {
-    file: { name?: any; status?: any }
-    fileList: any
-  }) => {
+  const handleOk = async (e: React.MouseEvent) => {
     try {
       setLoading(true)
       setTimeout(() => {
         setLoading(false)
         setVisible(true)
       }, 100)
-      await fileuploadService.upload({
-        info,
-      })
+      console.log(fileList)
+      // await fileuploadService.upload({
+      //   info,
+      // })
     } catch (e) {
       console.log("error", e)
     } finally {
@@ -213,7 +212,7 @@ const MyPage: AppPageProps<Props> = (props) => {
 
   const handleCancel = () => {
     setVisible(false)
-    setFileList([])
+    setFileList(undefined)
   }
 
   return (
@@ -382,7 +381,12 @@ const MyPage: AppPageProps<Props> = (props) => {
                         onCancel={handleCancel}
                         loading={loading}
                         title="Edit Profile">
-                        <FileUpload fileList={fileList} {...props} />
+                        <FileUpload
+                          name="file"
+                          action=""
+                          multiple={false}
+                          onChange={setFileList}
+                        />
                       </DefaultModal>
                     </Col>
                     <Col offset={0} span={24}>

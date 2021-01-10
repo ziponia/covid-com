@@ -3,17 +3,12 @@ import "antd/dist/antd.css"
 import { Upload, message } from "antd"
 import { InboxOutlined } from "@ant-design/icons"
 import AWS from "aws-sdk"
+import { DraggerProps } from "antd/lib/upload"
 
 const { Dragger } = Upload
 // const [fileList, updateFileList] = useState([])
 
-export type FileUploadProp = {
-  fileList: any
-  info: {
-    file: { name?: any; status?: any }
-    fileList: any
-  }
-}
+export type FileUploadProp = DraggerProps & {}
 const props = {
   name: "file",
   multiple: true,
