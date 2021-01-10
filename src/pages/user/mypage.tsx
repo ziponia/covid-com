@@ -47,7 +47,8 @@ import { UploadChangeParam, UploadFile } from "antd/lib/upload/interface"
 import userService, {
   UpdateUserInfoResponse,
 } from "@covid/service/user.service"
-import fileuploadService from "@covid/server/service/fileupload.service"
+
+import fileService from "@covid/service/file.service"
 import MyPageTemplate from "../../templates/MyPageTemplate"
 import DefaultModal from "../../components/Modal"
 import FileUpload from "../../components/FileUpload"
@@ -200,7 +201,9 @@ const MyPage: AppPageProps<Props> = (props) => {
         setLoading(false)
         setVisible(true)
       }, 100)
-      console.log(fileList)
+      const { data } = await fileService.upload({
+        files: fileList?.fileList,
+      })
       // await fileuploadService.upload({
       //   info,
       // })
