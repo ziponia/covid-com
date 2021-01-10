@@ -22,20 +22,34 @@ import {
   Divider,
   Input,
   AutoComplete,
+  Skeleton,
+  Badge,
 } from "antd"
 import {
   LockOutlined,
   FieldTimeOutlined,
   HomeOutlined,
+  CameraOutlined,
 } from "@ant-design/icons"
 
 import styled from "styled-components"
 import { AppLayoutProps, AppPageProps } from "@covid/_app.interface"
 import { useRouter } from "next/router"
+import feedService, { ListFeedResponse } from "@covid/service/feed.service"
+import htmlToString from "@covid/lib/htmlToString"
+import commentService, {
+  ListCommentResponse,
+} from "@covid/service/comment.service"
+import dayjs from "dayjs"
+
 import userService, {
   UpdateUserInfoResponse,
 } from "@covid/service/user.service"
+import fileuploadService from "@covid/server/service/fileupload.service"
 import MyPageTemplate from "../../templates/MyPageTemplate"
+import DefaultModal from "../../components/Modal"
+import FileUpload from "../../components/FileUpload"
+import AWS from "aws-sdk"
 
 const data = [
   {
@@ -128,10 +142,19 @@ type Props = {
 const MyPage: AppPageProps<Props> = (props) => {
   const screens = useBreakpoint()
   const isMobileScreen = screens.xs && !screens.md
-  const [session, loading] = useSession()
+  const [session] = useSession()
+  const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
 
   const defaultName = session?.user.name
   const [userName, setUserName] = useState(defaultName || "")
+  const [myFeeds, setMyFeeds] = useState<ListFeedResponse>()
+  const [myFeedPage, setMyFeedPage] = useState(0)
+  const [loadingMyFeed, setLoadingMyFeed] = useState(false)
+  const [myComments, setMyComments] = useState<ListCommentResponse>()
+  const [myCommentPage, setMyCommentPage] = useState(0)
+  const [fileList, setFileList] = useState()
+  // const [file, setFile] = useState()
 
   useEffect(() => {}, [userName])
 
@@ -165,6 +188,32 @@ const MyPage: AppPageProps<Props> = (props) => {
     if (defaultName !== changeName) {
       onSave(changeName)
     }
+  }
+  const showModal = () => {
+    setVisible(true)
+  }
+  const handleOk = async (info: {
+    file: { name?: any; status?: any }
+    fileList: any
+  }) => {
+    try {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+        setVisible(true)
+      }, 100)
+      await fileuploadService.upload({
+        info,
+      })
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
+  const handleCancel = () => {
+    setVisible(false)
+    setFileList([])
   }
 
   return (
@@ -311,7 +360,30 @@ const MyPage: AppPageProps<Props> = (props) => {
                     justify={"center"}
                     style={{ textAlign: "center" }}>
                     <Col offset={0} span={24}>
-                      <Avatar size={64} src={session?.user.image} />
+                      <a onClick={showModal}>
+                        <Badge
+                          count={
+                            <CameraOutlined
+                              style={{
+                                color: "#fff",
+                                backgroundColor: "#2db7f5",
+                                padding: "8px",
+                                borderRadius: "10px",
+                              }}
+                            />
+                          }
+                          offset={[-10, 100]}>
+                          <Avatar size={120} src={session?.user.image} />
+                        </Badge>
+                      </a>
+                      <DefaultModal
+                        visible={visible}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                        loading={loading}
+                        title="Edit Profile">
+                        <FileUpload fileList={fileList} {...props} />
+                      </DefaultModal>
                     </Col>
                     <Col offset={0} span={24}>
                       <Input
