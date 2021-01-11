@@ -34,6 +34,11 @@ const upload = async (req: AppApiRequest, res: NextApiResponse) => {
 
   const { name, size, type, text } = files
 
+  AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID_APP,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY_APP,
+  })
+
   const S3 = new AWS.S3()
 
   const rid = () => {
