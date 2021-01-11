@@ -1,6 +1,7 @@
 import React from "react"
 import { NextApiRequest, NextComponentType, NextPageContext } from "next"
 import { users as User } from "@prisma/client"
+import { Files } from "formidable"
 
 export type AppLayoutProps = {
   pageTitle?: string
@@ -29,4 +30,5 @@ export const defaultAppProps: AppLayoutProps = {
 
 export type AppApiRequest = NextApiRequest & {
   user?: User | null
+  files?: Files
 }
