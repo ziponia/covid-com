@@ -52,6 +52,7 @@ import fileService from "@covid/service/file.service"
 import MyPageTemplate from "../../templates/MyPageTemplate"
 import DefaultModal from "../../components/Modal"
 import FileUpload from "../../components/FileUpload"
+import { AnyARecord } from "dns"
 
 const data = [
   {
@@ -156,7 +157,7 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [myComments, setMyComments] = useState<ListCommentResponse>()
   const [myCommentPage, setMyCommentPage] = useState(0)
   const [fileList, setFileList] = useState<UploadChangeParam>()
-  // const [file, setFile] = useState()
+  const [file, setFile] = useState()
 
   useEffect(() => {}, [userName])
 
@@ -204,9 +205,20 @@ const MyPage: AppPageProps<Props> = (props) => {
       const { data } = await fileService.upload({
         files: fileList?.fileList,
       })
-      // await fileuploadService.upload({
-      //   info,
-      // })
+      console.log(data.accessUri)
+      // eslint-disable-next-line no-use-before-define
+      onSaveProfileImage(data.accessUri)
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
+  const onSaveProfileImage = async (image: any) => {
+    try {
+      const { data } = await userService.updateUserImage({
+        image,
+      })
     } catch (e) {
       console.log("error", e)
     } finally {
