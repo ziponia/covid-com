@@ -3,13 +3,16 @@ import { Comment, Feed, users as User } from "@prisma/client"
 import { AxiosResponse } from "axios"
 
 export interface ListCommentRequest {
-  feedId: number
+  feedId?: number
   page?: number
   size?: number
+  userId?: number
+  _includeFeed?: boolean
 }
 
 export interface CommentWithUser extends Comment {
   user: User
+  feed?: Feed
 }
 
 export interface ListCommentResponse {
