@@ -4,6 +4,11 @@ import { UploadFile } from "antd/lib/upload/interface"
 export interface FileUploadRequest {
   files?: Array<UploadFile>
 }
+
+export interface FileUploadResponse {
+  accessUri: string
+}
+
 const upload = (params: FileUploadRequest) => {
   const form = new FormData()
 
@@ -15,7 +20,7 @@ const upload = (params: FileUploadRequest) => {
     console.log("payload.item(i)", files[i].originFileObj)
     form.append("files", files[i].originFileObj as any)
   }
-  return $http.post(`/api/file/_upload`, form, {
+  return $http.post<FileUploadResponse>(`/api/file/_upload`, form, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

@@ -191,30 +191,35 @@ const MyPage: AppPageProps<Props> = (props) => {
   const showModal = () => {
     setVisible(true)
   }
-  const handleOk = async (e: React.MouseEvent) => {
-    try {
-      setLoading(true)
-      setTimeout(() => {
-        setLoading(false)
-        setVisible(true)
-      }, 100)
-      const { data } = await fileService.upload({
-        files: fileList?.fileList,
-      })
-      console.log(data.accessUri)
-      // eslint-disable-next-line no-use-before-define
-      onSaveProfileImage(data.accessUri)
-    } catch (e) {
-      console.log("error", e)
-    } finally {
-    }
-  }
 
   const onSaveProfileImage = async (image: any) => {
     try {
       const { data } = await userService.updateUserImage({
         image,
       })
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
+  const handleOk = async () => {
+    try {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+        setVisible(true)
+      }, 100)
+      const response = await fileService.upload({
+        files: fileList?.fileList,
+      })
+      if (!response) {
+        // 파일이 없을 경우... 처리
+        return
+      }
+
+      const { data } = response
+      onSaveProfileImage(data.accessUri)
     } catch (e) {
       console.log("error", e)
     } finally {
