@@ -416,6 +416,50 @@ const update = async (req: AppApiRequest, res: NextApiResponse) => {
   }
 }
 
+const scrapList = async (req: AppApiRequest, res: NextApiResponse) => {
+  const schema = Joi.object({
+    feedId: Joi.number(),
+    size: Joi.number().default(20),
+    page: Joi.number().default(1),
+    authorId: Joi.number(),
+    _includeFeed: Joi.bool(),
+  })
+
+  try {
+    const validate = await schema.validateAsync(req.query)
+    const getScraps = await prisma.screps.findMany({
+      orderBy: {
+        created_at: "desc",
+      },
+      where: {
+        // feedId: validate.feedId,
+        authorId: validate.authorId,
+      },
+      skip: (validate.page - 1) * 10,
+      take: validate.size,
+      include: {
+        author: true,
+        feed: validate._includeFeed,
+      },
+    })
+
+    const countOfScraps = await prisma.screps.count({
+      where: {
+        feedId: validate.feedId,
+      },
+    })
+
+    return res.status(200).send({
+      meta: {
+        totalElements: countOfScraps,
+      },
+      items: getScraps,
+    })
+  } catch (e) {
+    return res.status(403).send(e.details)
+  }
+}
+
 export default {
   create,
   list,
@@ -426,4 +470,5 @@ export default {
   unscreps,
   remove,
   update,
+  scrapList,
 }

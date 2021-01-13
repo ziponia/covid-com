@@ -33,7 +33,11 @@ import {
 import styled from "styled-components"
 import { AppLayoutProps, AppPageProps } from "@covid/_app.interface"
 import { useRouter } from "next/router"
-import feedService, { ListFeedResponse } from "@covid/service/feed.service"
+import feedService, {
+  ListFeedResponse,
+  ListScrapResponse,
+  ScrapWithUser,
+} from "@covid/service/feed.service"
 import htmlToString from "@covid/lib/htmlToString"
 import commentService, {
   ListCommentResponse,
@@ -49,27 +53,6 @@ import { AnyARecord } from "dns"
 import MyPageTemplate from "@covid/templates/MyPageTemplate"
 import DefaultModal from "@covid/components/Modal"
 import FileUpload from "@covid/components/FileUpload"
-
-const data = [
-  {
-    title: "Ant Design Title 1",
-  },
-  {
-    title: "Ant Design Title 2",
-  },
-  {
-    title: "Ant Design Title 3",
-  },
-  {
-    title: "Ant Design Title 4",
-  },
-  {
-    title: "Ant Design Title 5",
-  },
-  {
-    title: "Ant Design Title 6",
-  },
-]
 
 const { useBreakpoint } = Grid
 const { TabPane } = Tabs
@@ -151,7 +134,10 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [loadingMyFeed, setLoadingMyFeed] = useState(false)
   const [myComments, setMyComments] = useState<ListCommentResponse>()
   const [myCommentPage, setMyCommentPage] = useState(0)
+  const [myScraps, setMyScraps] = useState<ListScrapResponse>()
+  const [myScrapPage, setMyScrapPage] = useState(0)
   const [fileList, setFileList] = useState<UploadChangeParam>()
+
   const isMobileScreen = screens.xs && !screens.md
 
   useEffect(() => {}, [userName])
@@ -254,6 +240,16 @@ const MyPage: AppPageProps<Props> = (props) => {
     }
   }
 
+  const 나의_스크랩_리스트 = async (page: number) => {
+    try {
+      const { data } = await feedService.scrapList({
+        authorId: session?.user.id,
+        _includeFeed: true,
+      })
+      setMyScraps(data)
+    } finally {
+    }
+  }
   useEffect(() => {
     내가_쓴_글_리스트(myFeedPage)
   }, [myFeedPage])
@@ -261,6 +257,10 @@ const MyPage: AppPageProps<Props> = (props) => {
   useEffect(() => {
     나의_코멘트_리스트(myCommentPage)
   }, [myCommentPage])
+
+  useEffect(() => {
+    나의_스크랩_리스트(myScrapPage)
+  }, [myScrapPage])
 
   return (
     <Row style={{ flex: 1 }}>
@@ -375,21 +375,28 @@ const MyPage: AppPageProps<Props> = (props) => {
               <TabPane tab="스크랩" key="3">
                 <List
                   itemLayout="horizontal"
-                  dataSource={data}
+                  dataSource={myScraps?.items || []}
                   pagination={{
-                    onChange: (page) => {
-                      console.log(page)
-                    },
-                    pageSize: 5,
+                    onChange: setMyScrapPage,
+                    pageSize: 20,
                   }}
                   renderItem={(item) => (
-                    <List.Item>
+                    <List.Item
+                      actions={[
+                        <time key="comment-create-at">
+                          {dayjs(item.created_at).format("YYYY. MM. DD. hh:mm")}
+                        </time>,
+                      ]}>
                       <List.Item.Meta
-                        avatar={
-                          <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                        avatar={<Avatar src={item.author.image} />}
+                        title={
+                          <Link href={`/feed/${item.feed?.id}`}>
+                            <a href={`/feed/${item.feed?.id}`}>
+                              {htmlToString(item.feed?.content)}
+                            </a>
+                          </Link>
                         }
-                        title={<a href="https://ant.design">{item.title}</a>}
-                        description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                        description={item.feed?.title}
                       />
                     </List.Item>
                   )}
@@ -436,7 +443,7 @@ const MyPage: AppPageProps<Props> = (props) => {
                         onOk={handleOk}
                         onCancel={handleCancel}
                         loading={loading}
-                        title="Edit Profile">
+                        title="프로필 이미지 변경">
                         <FileUpload
                           name="file"
                           multiple={false}

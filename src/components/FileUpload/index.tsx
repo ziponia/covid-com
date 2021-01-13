@@ -35,7 +35,7 @@ const FileUpload: React.FC<FileUploadProps> = (props) => {
         </p>
         <p className="ant-upload-text">이미지 업로드</p>
         <p className="ant-upload-hint">
-          이미지를 선택하거나 드래그하여 업로드를 할 수 있습니다.
+          이미지를 선택 또는 드래그하여 업로드할 수 있습니다.
         </p>
       </Dragger>
     </div>

@@ -6,6 +6,8 @@ import {
   Screps,
   Feed,
 } from "@prisma/client"
+import { User } from "next-auth"
+import { Dayjs } from "dayjs"
 
 export type FeedType = IFeed & {
   author: IUser
@@ -74,6 +76,30 @@ const unlikes = async (payload: UnLikeFeedRequest) => {
   return $http.post<UnLikeFeedResponse>(`/api/feed/unlikes`, payload)
 }
 
+export interface ListScrapRequest {
+  feedId?: number
+  page?: number
+  size?: number
+  authorId?: number
+  _includeFeed?: boolean
+}
+
+export interface ScrapWithUser extends Screps {
+  content(content: any): import("react").ReactNode
+  author: User
+  feed: Feed
+}
+
+export interface ListScrapResponse {
+  meta: { totalElements: number }
+  items: ScrapWithUser[]
+}
+
+const scrapList = (params: ListScrapRequest) => {
+  return $http.get<ListScrapResponse>(`/api/feed/scrap-list`, {
+    params,
+  })
+}
 export interface ScrepFeedRequest {
   feedId: number
 }
@@ -129,4 +155,5 @@ export default {
   unscreps,
   remove,
   update,
+  scrapList,
 }
