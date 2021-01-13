@@ -198,6 +198,7 @@ const MyPage: AppPageProps<Props> = (props) => {
       const response = await fileService.upload({
         files: fileList?.fileList,
       })
+      setVisible(false)
       if (!response) {
         // 파일이 없을 경우... 처리
         return
