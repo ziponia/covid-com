@@ -439,9 +439,10 @@ const MyPage: AppPageProps<Props> = (props) => {
                         title="Edit Profile">
                         <FileUpload
                           name="file"
-                          action=""
                           multiple={false}
                           onChange={setFileList}
+                          transformFile={undefined}
+                          beforeUpload={() => true}
                         />
                       </DefaultModal>
                     </Col>
