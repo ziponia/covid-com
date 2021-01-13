@@ -10,6 +10,7 @@ export type DefualtModalProps = {
 }
 
 const DefualtModal: React.FC<DefualtModalProps> = (props) => {
+  const { children } = props
   return (
     <div>
       <Modal
@@ -26,8 +27,9 @@ const DefualtModal: React.FC<DefualtModalProps> = (props) => {
             onClick={props.onOk}>
             Submit
           </Button>,
-        ]}
-      />
+        ]}>
+        {children}
+      </Modal>
     </div>
   )
 }
