@@ -24,9 +24,31 @@ const update = async (req: AppApiRequest, res: NextApiResponse) => {
       name,
     },
   })
+
   return res.send(updateUserInfo)
+}
+
+const updateUserImage = async (req: AppApiRequest, res: NextApiResponse) => {
+  if (!req.user) {
+    return res.status(401).send({
+      message: "required authentication",
+    })
+  }
+
+  const { image } = req.body
+
+  const updateImage = await prisma.users.update({
+    where: {
+      id: req.user?.id,
+    },
+    data: {
+      image,
+    },
+  })
+  return res.send(updateImage)
 }
 
 export default {
   update,
+  updateUserImage,
 }

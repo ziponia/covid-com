@@ -55,5 +55,6 @@ module.exports = {
     "react/jsx-curly-newline": "off",
     "import/no-mutable-exports": "off",
     "react/display-name": "off",
+    "no-plusplus": "off",
   },
 }
