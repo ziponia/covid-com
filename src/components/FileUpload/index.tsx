@@ -8,7 +8,7 @@ import { DraggerProps } from "antd/lib/upload"
 const { Dragger } = Upload
 // const [fileList, updateFileList] = useState([])
 
-export type FileUploadProp = DraggerProps & {}
+export type FileUploadProps = DraggerProps & {}
 const props = {
   name: "file",
   multiple: true,
@@ -25,19 +25,17 @@ const props = {
     }
   },
 }
-const FileUpload: React.FC<FileUploadProp> = (props) => {
+const FileUpload: React.FC<FileUploadProps> = (props) => {
+  const { children, ...rest } = props
   return (
     <div>
-      <Dragger {...props}>
+      <Dragger {...rest}>
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">
-          Click or drag file to this area to upload
-        </p>
+        <p className="ant-upload-text">이미지 업로드</p>
         <p className="ant-upload-hint">
-          Support for a single or bulk upload. Strictly prohibit from uploading
-          company data or other band files
+          이미지를 선택하거나 드래그하여 업로드를 할 수 있습니다.
         </p>
       </Dragger>
     </div>

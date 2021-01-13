@@ -46,9 +46,9 @@ import userService, {
 } from "@covid/service/user.service"
 import fileService from "@covid/service/file.service"
 import { AnyARecord } from "dns"
-import MyPageTemplate from "../../templates/MyPageTemplate"
-import DefaultModal from "../../components/Modal"
-import FileUpload from "../../components/FileUpload"
+import MyPageTemplate from "@covid/templates/MyPageTemplate"
+import DefaultModal from "@covid/components/Modal"
+import FileUpload from "@covid/components/FileUpload"
 
 const data = [
   {
@@ -140,7 +140,6 @@ type Props = {
 
 const MyPage: AppPageProps<Props> = (props) => {
   const screens = useBreakpoint()
-  const isMobileScreen = screens.xs && !screens.md
   const [session] = useSession()
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -153,7 +152,7 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [myComments, setMyComments] = useState<ListCommentResponse>()
   const [myCommentPage, setMyCommentPage] = useState(0)
   const [fileList, setFileList] = useState<UploadChangeParam>()
-  const [file, setFile] = useState()
+  const isMobileScreen = screens.xs && !screens.md
 
   useEffect(() => {}, [userName])
 

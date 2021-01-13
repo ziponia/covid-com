@@ -10,24 +10,27 @@ export type DefualtModalProps = {
 }
 
 const DefualtModal: React.FC<DefualtModalProps> = (props) => {
+  const { children } = props
   return (
     <div>
       <Modal
         title={props.title}
         visible={props.visible}
+        onCancel={props.onCancel}
         footer={[
           <Button key="back" onClick={props.onCancel}>
-            Return
+            취소
           </Button>,
           <Button
             key="submit"
             type="primary"
             loading={props.loading}
             onClick={props.onOk}>
-            Submit
+            저장
           </Button>,
-        ]}
-      />
+        ]}>
+        {children}
+      </Modal>
     </div>
   )
 }
