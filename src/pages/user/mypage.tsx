@@ -21,23 +21,34 @@ import {
   Input,
   AutoComplete,
   Skeleton,
+  Badge,
 } from "antd"
 import {
   LockOutlined,
   FieldTimeOutlined,
   HomeOutlined,
+  CameraOutlined,
 } from "@ant-design/icons"
 
 import styled from "styled-components"
-import { AppPageProps } from "@covid/_app.interface"
-import userService from "@covid/service/user.service"
+import { AppLayoutProps, AppPageProps } from "@covid/_app.interface"
+import { useRouter } from "next/router"
 import feedService, { ListFeedResponse } from "@covid/service/feed.service"
-import MyPageTemplate from "@covid/templates/MyPageTemplate"
 import htmlToString from "@covid/lib/htmlToString"
 import commentService, {
   ListCommentResponse,
 } from "@covid/service/comment.service"
 import dayjs from "dayjs"
+import AWS from "aws-sdk"
+import { UploadChangeParam, UploadFile } from "antd/lib/upload/interface"
+import userService, {
+  UpdateUserInfoResponse,
+} from "@covid/service/user.service"
+import fileService from "@covid/service/file.service"
+import { AnyARecord } from "dns"
+import MyPageTemplate from "@covid/templates/MyPageTemplate"
+import DefaultModal from "@covid/components/Modal"
+import FileUpload from "@covid/components/FileUpload"
 
 const data = [
   {
@@ -129,8 +140,9 @@ type Props = {
 
 const MyPage: AppPageProps<Props> = (props) => {
   const screens = useBreakpoint()
-  const isMobileScreen = screens.xs && !screens.md
-  const [session, loading] = useSession()
+  const [session] = useSession()
+  const [loading, setLoading] = useState(false)
+  const [visible, setVisible] = useState(false)
 
   const defaultName = session?.user.name
   const [userName, setUserName] = useState(defaultName || "")
@@ -139,6 +151,8 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [loadingMyFeed, setLoadingMyFeed] = useState(false)
   const [myComments, setMyComments] = useState<ListCommentResponse>()
   const [myCommentPage, setMyCommentPage] = useState(0)
+  const [fileList, setFileList] = useState<UploadChangeParam>()
+  const isMobileScreen = screens.xs && !screens.md
 
   useEffect(() => {}, [userName])
 
@@ -172,6 +186,48 @@ const MyPage: AppPageProps<Props> = (props) => {
     if (defaultName !== changeName) {
       onSave(changeName)
     }
+  }
+  const showModal = () => {
+    setVisible(true)
+  }
+
+  const onSaveProfileImage = async (image: any) => {
+    try {
+      const { data } = await userService.updateUserImage({
+        image,
+      })
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
+  const handleOk = async () => {
+    try {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+        setVisible(true)
+      }, 100)
+      const response = await fileService.upload({
+        files: fileList?.fileList,
+      })
+      if (!response) {
+        // 파일이 없을 경우... 처리
+        return
+      }
+
+      const { data } = response
+      onSaveProfileImage(data.accessUri)
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+    }
+  }
+
+  const handleCancel = () => {
+    setVisible(false)
+    setFileList(undefined)
   }
 
   const 내가_쓴_글_리스트 = async (page: number) => {
@@ -359,7 +415,36 @@ const MyPage: AppPageProps<Props> = (props) => {
                     justify={"center"}
                     style={{ textAlign: "center" }}>
                     <Col offset={0} span={24}>
-                      <Avatar size={64} src={session?.user.image} />
+                      <a onClick={showModal}>
+                        <Badge
+                          count={
+                            <CameraOutlined
+                              style={{
+                                color: "#fff",
+                                backgroundColor: "#2db7f5",
+                                padding: "8px",
+                                borderRadius: "10px",
+                              }}
+                            />
+                          }
+                          offset={[-10, 100]}>
+                          <Avatar size={120} src={session?.user.image} />
+                        </Badge>
+                      </a>
+                      <DefaultModal
+                        visible={visible}
+                        onOk={handleOk}
+                        onCancel={handleCancel}
+                        loading={loading}
+                        title="Edit Profile">
+                        <FileUpload
+                          name="file"
+                          multiple={false}
+                          onChange={setFileList}
+                          transformFile={undefined}
+                          beforeUpload={() => true}
+                        />
+                      </DefaultModal>
                     </Col>
                     <Col offset={0} span={24}>
                       <Input
