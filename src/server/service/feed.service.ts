@@ -439,7 +439,11 @@ const scrapList = async (req: AppApiRequest, res: NextApiResponse) => {
       take: validate.size,
       include: {
         author: true,
-        feed: validate._includeFeed,
+        feed: {
+          include: {
+            author: true,
+          },
+        },
       },
     })
 

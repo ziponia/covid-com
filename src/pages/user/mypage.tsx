@@ -389,7 +389,7 @@ const MyPage: AppPageProps<Props> = (props) => {
                         </time>,
                       ]}>
                       <List.Item.Meta
-                        avatar={<Avatar src={item.author.image} />}
+                        avatar={<Avatar src={item.feed.author?.image} />}
                         title={
                           <Link href={`/feed/${item.feed?.id}`}>
                             <a href={`/feed/${item.feed?.id}`}>

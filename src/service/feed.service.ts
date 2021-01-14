@@ -85,9 +85,8 @@ export interface ListScrapRequest {
 }
 
 export interface ScrapWithUser extends Screps {
-  content(content: any): import("react").ReactNode
   author: User
-  feed: Feed
+  feed: FeedType
 }
 
 export interface ListScrapResponse {
