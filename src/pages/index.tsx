@@ -191,6 +191,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
                     countscreps={item.screps}
                     like={item.Likes.length > 0}
                     screp={item.Screps.length > 0}
+                    createDt={item.created_at}
                     onLike={() => _onLikeFeed(item.id)}
                     onUnLike={() => {
                       if (item.Likes.length === 0) return

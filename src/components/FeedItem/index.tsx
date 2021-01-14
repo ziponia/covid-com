@@ -9,6 +9,7 @@ import {
   StarOutlined,
 } from "@ant-design/icons"
 import Link from "next/link"
+import dayjs from "dayjs"
 
 const { Meta } = Card
 
@@ -32,6 +33,7 @@ export type FeedItemProps = {
   avatar?: string
   like?: boolean
   screp?: boolean
+  createDt: Date
   onLike?: () => Promise<void> | void
   onUnLike?: () => Promise<void> | void
   onScrep?: () => Promise<void> | void
@@ -159,9 +161,19 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
         <Meta
           avatar={avatar && <Avatar src={avatar} size="large" />}
           title={
-            <Link href={`/feed/${id}`}>
-              <a>{title}</a>
-            </Link>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}>
+              <Link href={`/feed/${id}`}>
+                <a>{title}</a>
+              </Link>
+              <span style={{ flex: 1 }} />
+              <small style={{ fontSize: 12, color: "#666" }}>
+                {dayjs(props.createDt).format("YYYY. MM. DD. hh:mm")}
+              </small>
+            </div>
           }
         />
         <p>{content}</p>
