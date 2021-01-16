@@ -22,6 +22,7 @@ import {
   AutoComplete,
   Skeleton,
   Badge,
+  Modal,
 } from "antd"
 import {
   LockOutlined,
@@ -53,6 +54,7 @@ import { AnyARecord } from "dns"
 import MyPageTemplate from "@covid/templates/MyPageTemplate"
 import DefaultModal from "@covid/components/Modal"
 import FileUpload from "@covid/components/FileUpload"
+import { type } from "os"
 
 const { useBreakpoint } = Grid
 const { TabPane } = Tabs
@@ -92,7 +94,7 @@ const StyledContent = styled.div<StyledContainerProps>`
 const StyledTabs = styled.div<StyledContainerProps>`
   .ant-tabs-tab {
     font-size: 24px;
-    ${(props) => props.screens.xs && `font-size:20px`}
+    ${(props) => props.screens.xs && `font-size:16px; margin: 0 16% 0 0;`}
   }
   .ant-list-pagination {
     text-align: center;
@@ -136,7 +138,8 @@ const MyPage: AppPageProps<Props> = (props) => {
   const [myCommentPage, setMyCommentPage] = useState(0)
   const [myScraps, setMyScraps] = useState<ListScrapResponse>()
   const [myScrapPage, setMyScrapPage] = useState(0)
-  const [fileList, setFileList] = useState<UploadChangeParam>()
+  const [fileList, setFileList] = useState<UploadChangeParam<any>>()
+  const [avatar, setAvatar] = useState(session?.user.image)
 
   const isMobileScreen = screens.xs && !screens.md
 
@@ -190,23 +193,25 @@ const MyPage: AppPageProps<Props> = (props) => {
 
   const handleOk = async () => {
     try {
-      setLoading(true)
-      setTimeout(() => {
-        setLoading(false)
-        setVisible(true)
-      }, 100)
-      const response = await fileService.upload({
-        files: fileList?.fileList,
-      })
-      setVisible(false)
-      if (!response) {
-        // 파일이 없을 경우... 처리
+      if (!fileList || fileList.fileList.length === 0) {
+        Modal.error({
+          title: "어머낫",
+          content: "업로드하는 파일이 없어요. 다시 확인 해주세요.",
+        })
         return
       }
 
-      const { data } = response
-      onSaveProfileImage(data.accessUri)
+      const getFile = fileList.fileList[0].response as { accessUri: string }
+
+      await onSaveProfileImage(getFile.accessUri)
+      setAvatar(getFile.accessUri)
+      setVisible(false)
+      setFileList(undefined)
     } catch (e) {
+      Modal.warning({
+        title: "어머낫",
+        content: "파일을 업로드하지 못했습니다. 다시 시도해주세요.",
+      })
       console.log("error", e)
     } finally {
     }
@@ -264,7 +269,7 @@ const MyPage: AppPageProps<Props> = (props) => {
   }, [myScrapPage])
 
   return (
-    <Row style={{ flex: 1 }}>
+    <Row style={{ flex: 1, width: "100%" }}>
       <StyledContent screens={screens}>
         <div className="my_header">
           <Row style={{ padding: "24px" }}>
@@ -321,6 +326,10 @@ const MyPage: AppPageProps<Props> = (props) => {
               <TabPane tab="내가 쓴 글" key="1">
                 <Skeleton loading={loadingMyFeed}>
                   <List
+                    grid={{
+                      gutter: 16,
+                      column: 1,
+                    }}
                     itemLayout="horizontal"
                     dataSource={myFeeds?.items || []}
                     pagination={{
@@ -328,7 +337,22 @@ const MyPage: AppPageProps<Props> = (props) => {
                       pageSize: 20,
                     }}
                     renderItem={(item) => (
-                      <List.Item>
+                      <List.Item
+                        extra={
+                          <div
+                            className="date"
+                            style={{
+                              textAlign: "right",
+                              fontSize: "0.8rem",
+                              color: "#a2a2a2",
+                            }}>
+                            <time key="comment-create-at">
+                              {dayjs(item.created_at).format(
+                                "YYYY. MM. DD. hh:mm",
+                              )}
+                            </time>
+                          </div>
+                        }>
                         <List.Item.Meta
                           avatar={<Avatar src={item.author.image} />}
                           title={
@@ -345,6 +369,10 @@ const MyPage: AppPageProps<Props> = (props) => {
               </TabPane>
               <TabPane tab="내가 쓴 댓글" key="2">
                 <List
+                  grid={{
+                    gutter: 16,
+                    column: 1,
+                  }}
                   itemLayout="horizontal"
                   dataSource={myComments?.items || []}
                   pagination={{
@@ -353,21 +381,31 @@ const MyPage: AppPageProps<Props> = (props) => {
                   }}
                   renderItem={(item) => (
                     <List.Item
-                      actions={[
-                        <time key="comment-create-at">
-                          {dayjs(item.created_at).format("YYYY. MM. DD. hh:mm")}
-                        </time>,
-                      ]}>
+                      extra={
+                        <div
+                          className="date"
+                          style={{
+                            textAlign: "right",
+                            fontSize: "0.8rem",
+                            color: "#a2a2a2",
+                          }}>
+                          <time key="comment-create-at">
+                            {dayjs(item.created_at).format(
+                              "YYYY. MM. DD. hh:mm",
+                            )}
+                          </time>
+                        </div>
+                      }>
                       <List.Item.Meta
                         avatar={<Avatar src={item.user.image} />}
                         title={
                           <Link href={`/feed/${item.feed?.id}`}>
                             <a href={`/feed/${item.feed?.id}`}>
-                              {item.content}
+                              {item.feed?.title}
                             </a>
                           </Link>
                         }
-                        description={item.feed?.title}
+                        description={item.content}
                       />
                     </List.Item>
                   )}
@@ -375,6 +413,10 @@ const MyPage: AppPageProps<Props> = (props) => {
               </TabPane>
               <TabPane tab="스크랩" key="3">
                 <List
+                  grid={{
+                    gutter: 16,
+                    column: 1,
+                  }}
                   itemLayout="horizontal"
                   dataSource={myScraps?.items || []}
                   pagination={{
@@ -383,21 +425,31 @@ const MyPage: AppPageProps<Props> = (props) => {
                   }}
                   renderItem={(item) => (
                     <List.Item
-                      actions={[
-                        <time key="comment-create-at">
-                          {dayjs(item.created_at).format("YYYY. MM. DD. hh:mm")}
-                        </time>,
-                      ]}>
+                      extra={
+                        <div
+                          className="date"
+                          style={{
+                            textAlign: "right",
+                            fontSize: "0.8rem",
+                            color: "#a2a2a2",
+                          }}>
+                          <time key="comment-create-at">
+                            {dayjs(item.created_at).format(
+                              "YYYY. MM. DD. hh:mm",
+                            )}
+                          </time>
+                        </div>
+                      }>
                       <List.Item.Meta
                         avatar={<Avatar src={item.feed.author?.image} />}
                         title={
                           <Link href={`/feed/${item.feed?.id}`}>
                             <a href={`/feed/${item.feed?.id}`}>
-                              {htmlToString(item.feed?.content)}
+                              {item.feed?.title}
                             </a>
                           </Link>
                         }
-                        description={item.feed?.title}
+                        description={htmlToString(item.feed?.content)}
                       />
                     </List.Item>
                   )}
@@ -436,7 +488,7 @@ const MyPage: AppPageProps<Props> = (props) => {
                             />
                           }
                           offset={[-10, 100]}>
-                          <Avatar size={120} src={session?.user.image} />
+                          <Avatar size={120} src={avatar} />
                         </Badge>
                       </a>
                       <DefaultModal
@@ -446,11 +498,25 @@ const MyPage: AppPageProps<Props> = (props) => {
                         loading={loading}
                         title="프로필 이미지 변경">
                         <FileUpload
-                          name="file"
+                          name="files"
                           multiple={false}
                           onChange={setFileList}
+                          action="/api/file/_upload"
                           transformFile={undefined}
                           beforeUpload={() => true}
+                          fileList={fileList?.fileList || []}
+                          accept={"image/*"}
+                          progress={{
+                            strokeColor: {
+                              "0%": "#108ee9",
+                              "100%": "#87d068",
+                            },
+                            strokeWidth: 3,
+                            format: (percent) => {
+                              if (!percent) return ""
+                              return `${parseFloat(percent.toFixed(2))}%`
+                            },
+                          }}
                         />
                       </DefaultModal>
                     </Col>

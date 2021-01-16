@@ -18,7 +18,7 @@ const DefualtModal: React.FC<DefualtModalProps> = (props) => {
       onCancel={props.onCancel}
       footer={[
         <Button key="back" onClick={props.onCancel}>
-          취소
+          닫기
         </Button>,
         <Button
           key="submit"
