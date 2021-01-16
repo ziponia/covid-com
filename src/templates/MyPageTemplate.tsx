@@ -11,7 +11,7 @@ const MyPageTemplate: React.FC<Props> = (props) => {
     <Layout className="app-layout">
       <Layout.Content className="__main">
         <Layout className="site-layout-background">
-          <Layout.Content style={{ display: "flex" }}>
+          <Layout.Content style={{ display: "flex", backgroundColor: "#fff" }}>
             {children}
           </Layout.Content>
         </Layout>
