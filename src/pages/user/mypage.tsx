@@ -200,7 +200,7 @@ const MyPage: AppPageProps<Props> = (props) => {
         })
         return
       }
-
+      setLoading(true)
       const getFile = fileList.fileList[0].response as { accessUri: string }
 
       await onSaveProfileImage(getFile.accessUri)
@@ -214,6 +214,7 @@ const MyPage: AppPageProps<Props> = (props) => {
       })
       console.log("error", e)
     } finally {
+      setLoading(false)
     }
   }
 
@@ -512,10 +513,10 @@ const MyPage: AppPageProps<Props> = (props) => {
                               "100%": "#87d068",
                             },
                             strokeWidth: 3,
-                            format: (percent) => {
-                              if (!percent) return ""
-                              return `${parseFloat(percent.toFixed(2))}%`
-                            },
+                            // format: (percent) => {
+                            //   if (!percent) return ""
+                            //   return `${parseFloat(percent.toFixed(2))}%`
+                            // },
                           }}
                         />
                       </DefaultModal>
