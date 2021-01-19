@@ -24,6 +24,7 @@ import feedService, {
   FeedType,
   ListFeedResponse,
 } from "@covid/service/feed.service"
+import { SearchOutlined } from "@ant-design/icons"
 
 const { useBreakpoint } = Grid
 
@@ -157,15 +158,23 @@ const IndexPage: AppPageProps<Props> = (props) => {
               borderBottom: affixed ? "1px solid #eee" : undefined,
               transition: "all 300ms",
             }}
-            extra={
-              <Link href="/#/post/create">
+            extra={[
+              <Link key="serachBtn" href="/search">
+                <Button
+                  icon={<SearchOutlined />}
+                  type="default"
+                  style={{ borderColor: "#1890ff", color: "#1890ff" }}>
+                  검색
+                </Button>
+              </Link>,
+              <Link key="WriteBtn" href="/#/post/create">
                 <a>
                   <Button icon={<BsPencil />} type="primary">
                     글쓰기
                   </Button>
                 </a>
-              </Link>
-            }
+              </Link>,
+            ]}
           />
         </Affix>
         <Row>
