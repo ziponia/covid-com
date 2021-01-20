@@ -32,13 +32,18 @@ const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
       skip: _page > -1 ? _page * 10 : undefined,
       take: parseInt(size as string, 10),
       where: {
-        authorId: parseInt(authorId as string, 10) || undefined,
-        title: {
-          contains: _searchText,
-        },
-        content: {
-          contains: _searchText,
-        },
+        OR: [
+          {
+            title: {
+              contains: _searchText,
+            },
+          },
+          {
+            content: {
+              contains: _searchText,
+            },
+          },
+        ],
       },
       include: {
         author: true,
