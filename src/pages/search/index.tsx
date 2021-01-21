@@ -12,6 +12,7 @@ import feedService, {
   FeedType,
   ListFeedResponse,
 } from "@covid/service/feed.service"
+import { useRouter, Router } from "next/router"
 import { SearchOutlined } from "@ant-design/icons"
 import searchService from "@covid/service/search.service"
 import { useSession } from "next-auth/client"
@@ -21,22 +22,20 @@ import htmlToString from "@covid/lib/htmlToString"
 const { useBreakpoint } = Grid
 
 type Props = {
-  data: ListFeedResponse
-  searchText: string
-  onSearch: () => void
+  data?: ListFeedResponse
 }
 
 const SearchPage: AppPageProps<Props> = (props) => {
+  const { data, ...rest } = props
   const { Search } = Input
   const screens = useBreakpoint()
   const [loading, setLoading] = useState(false)
-  const [results, setResults] = useState<ListFeedResponse>()
-  const [searchText, setSearchText] = useState("")
+  const [results, setResults] = useState<ListFeedResponse | undefined>(data)
   const [timer, setTimer] = useState(0)
+  const router = useRouter()
+  const { query } = router
 
   const onSearch = async (e: any) => {
-    setSearchText(e.target.value)
-
     if (timer) {
       window.clearTimeout(timer)
     }
@@ -50,6 +49,13 @@ const SearchPage: AppPageProps<Props> = (props) => {
     }
 
     const _setTimer = window.setTimeout(async (page: number) => {
+      router.push(
+        {
+          query: { q: searchValue },
+        },
+        undefined,
+        { shallow: true },
+      )
       if (searchValue.length === 0) {
         setResults(initiallistFeedResponse)
         return
@@ -62,7 +68,7 @@ const SearchPage: AppPageProps<Props> = (props) => {
       } catch (e) {
         console.error("error", e)
       }
-    }, 400)
+    }, 600)
     setTimer(_setTimer)
   }
   return (
@@ -78,7 +84,7 @@ const SearchPage: AppPageProps<Props> = (props) => {
               placeholder="궁금한 키워드를 검색해보세요."
               loading={loading}
               onChange={onSearch}
-              value={searchText}
+              defaultValue={query.q || ""}
               enterButton
               size="large"
             />
@@ -108,6 +114,22 @@ const SearchPage: AppPageProps<Props> = (props) => {
       <BackTop />
     </>
   )
+}
+
+SearchPage.getInitialProps = async (context) => {
+  const { query } = context
+
+  if (!query.q) {
+    return {}
+  }
+
+  const { data } = await searchService.feedList({
+    searchText: query.q as string,
+  })
+
+  return {
+    data,
+  }
 }
 
 export default SearchPage
