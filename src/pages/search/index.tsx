@@ -124,7 +124,7 @@ SearchPage.getInitialProps = async (context) => {
   }
 
   const { data } = await searchService.feedList({
-    searchText: query.q as string,
+    q: query.q as string,
   })
 
   return {

@@ -27,7 +27,7 @@ export interface ListFeedRequest {
   size?: number
   authorId?: number
   page?: number
-  q?: string | undefined
+  q?: string
 }
 
 const feedList = async (params?: ListFeedRequest) => {
