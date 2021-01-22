@@ -81,6 +81,7 @@ const SearchPage: AppPageProps<Props> = (props) => {
             sm={!screens.md ? 24 : 12}
             offset={screens.xs || !screens.md ? 0 : 6}>
             <Search
+              style={screens.xs ? { padding: "3%", marginBottom: "2%" } : {}}
               placeholder="궁금한 키워드를 검색해보세요."
               loading={loading}
               onChange={onSearch}
