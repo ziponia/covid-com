@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, Component } from "react"
 import { Skeleton, Switch, Card, Avatar, Space, Button } from "antd"
 import styled from "styled-components"
 import {
@@ -28,8 +28,8 @@ export type FeedItemProps = {
   id: number
   title: string
   content: string
-  countlikes: number
-  countscreps: number
+  countlikes?: number
+  countscreps?: number
   avatar?: string
   like?: boolean
   screp?: boolean
@@ -132,25 +132,37 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     }
   }
 
+  const renderAction = (counter: any) => (Component: JSX.Element) => {
+    if (typeof counter === "undefined") {
+      return null
+    }
+    return Component
+  }
+
   return (
     <StyledCard
       actions={[
-        <IconText
-          icon={screp ? <StarFilled /> : <StarOutlined />}
-          text={countscreps}
-          key="list-vertical-star-o"
-          loading={screpLoading}
-          disabled={screpLoading}
-          onClick={!screp ? _onScrep : _onUnScrep}
-        />,
-        <IconText
-          icon={like ? <LikeFilled /> : <LikeOutlined />}
-          text={countlikes}
-          key="list-vertical-like-o"
-          loading={loading}
-          disabled={loading}
-          onClick={!like ? _onLike : _onUnLike}
-        />,
+        renderAction(countscreps)(
+          <IconText
+            icon={screp ? <StarFilled /> : <StarOutlined />}
+            text={countscreps}
+            key="list-vertical-star-o"
+            loading={screpLoading}
+            disabled={screpLoading}
+            onClick={!screp ? _onScrep : _onUnScrep}
+          />,
+        ),
+        renderAction(countlikes)(
+          <IconText
+            icon={like ? <LikeFilled /> : <LikeOutlined />}
+            text={countlikes}
+            key="list-vertical-like-o"
+            loading={loading}
+            disabled={loading}
+            onClick={!like ? _onLike : _onUnLike}
+          />,
+        ),
+
         // <IconText
         //   icon={<MessageOutlined />}
         //   text="2"
