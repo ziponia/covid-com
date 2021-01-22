@@ -167,7 +167,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
                   검색
                 </Button>
               </Link>,
-              <Link key="WriteBtn" href="/#/post/create">
+              <Link key="writeBtn" href="/#/post/create">
                 <a>
                   <Button icon={<BsPencil />} type="primary">
                     글쓰기

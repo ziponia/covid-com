@@ -39,7 +39,7 @@ const SearchPage: AppPageProps<Props> = (props) => {
     if (timer) {
       window.clearTimeout(timer)
     }
-    const searchValue = e.target.value
+    const { value } = e.target
 
     const initiallistFeedResponse: ListFeedResponse = {
       meta: {
@@ -51,18 +51,18 @@ const SearchPage: AppPageProps<Props> = (props) => {
     const _setTimer = window.setTimeout(async (page: number) => {
       router.push(
         {
-          query: { q: searchValue },
+          query: { q: value },
         },
         undefined,
         { shallow: true },
       )
-      if (searchValue.length === 0) {
+      if (value.length === 0) {
         setResults(initiallistFeedResponse)
         return
       }
       try {
         const { data } = await searchService.feedList({
-          searchText: searchValue,
+          q: value,
         })
         setResults(data)
       } catch (e) {

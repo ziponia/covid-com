@@ -8,14 +8,29 @@ import { NextApiResponse } from "next"
  * 피드를 검색하여 리스트를 출력합니다.
  */
 const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { cursor, size = "20", authorId, page, searchText } = req.query
+  const { cursor, size = "20", authorId, page, q } = req.query
 
-  const _searchText = searchText as string
+  const _searchText = q as string
   const _cursor = cursor ? parseInt(cursor as string, 10) : -1
   const _page = page ? parseInt(page as string, 10) : -1
 
   try {
-    const totalElements = await prisma.feed.count()
+    const totalElements = await prisma.feed.count({
+      where: {
+        OR: [
+          {
+            title: {
+              contains: _searchText,
+            },
+          },
+          {
+            content: {
+              contains: _searchText,
+            },
+          },
+        ],
+      },
+    })
     const lastFeed = await prisma.feed.findFirst({
       orderBy: {
         id: "desc",
@@ -47,18 +62,6 @@ const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
       },
       include: {
         author: true,
-        Likes: {
-          distinct: "id",
-          where: {
-            authorId: req.user?.id,
-          },
-        },
-        Screps: {
-          distinct: "id",
-          where: {
-            authorId: req.user?.id,
-          },
-        },
       },
     })
     return res.send({
