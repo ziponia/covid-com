@@ -73,7 +73,7 @@ const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
     return res.send({
       meta: {
         totalElements,
-        cursor: _cursor,
+        cursor: feeds.length > 0 ? feeds[feeds.length - 1].id : undefined,
       },
       items: feeds,
     })

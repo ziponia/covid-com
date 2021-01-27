@@ -67,6 +67,9 @@ const SearchPage: AppPageProps<Props> = (props) => {
           q: value,
         })
         setResults(data)
+        if (data?.items) {
+          setCursor(data?.items[data.items.length - 1].id)
+        }
       } catch (e) {
         console.error("error", e)
       }
@@ -76,21 +79,22 @@ const SearchPage: AppPageProps<Props> = (props) => {
 
   const handleInfiniteOnLoad = async () => {
     try {
-      setLoading(true)
-      console.log(cursor)
-      console.log(query.q)
-      const { data } = await searchService.feedList({ cursor, q: query.q })
+      const q = query.q as string
 
-      setCursor(data?.items[data.items.length - 1].id)
+      const { data } = await searchService.feedList({ cursor, q })
+
+      if (data?.items) {
+        setCursor(data?.items[data.items.length - 1].id)
+      }
 
       setResults({
         meta: {
           ...results?.meta,
         },
-        items: results?.items.concat(data.items),
+        items: results?.items.concat(data.items) || [],
       })
 
-      setLoading(true)
+      // setLoading(true)
     } catch (e) {
       console.log("error", e)
     } finally {
