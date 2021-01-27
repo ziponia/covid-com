@@ -8,7 +8,7 @@ import { NextApiResponse } from "next"
  * 피드를 검색하여 리스트를 출력합니다.
  */
 const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { cursor, size = "5", page, q } = req.query
+  const { cursor, size = "10", page, q } = req.query
 
   console.log(cursor)
 
