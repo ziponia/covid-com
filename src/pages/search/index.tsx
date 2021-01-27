@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react"
 
 import Link from "next/link"
-import { Input, Button, Row, Col, BackTop, Grid, List, Empty } from "antd"
+import { Input, Button, Row, Col, BackTop, Grid, List, Empty, Spin } from "antd"
+import InfiniteScroll from "react-infinite-scroller"
 import styled from "styled-components"
 import { NextPageContext } from "next"
 import { AppLayoutProps, AppPageProps } from "@covid/_app.interface"
 import Layout from "antd/lib/layout/layout"
 import { BsPencil } from "react-icons/bs"
-import feedService, {
-  CreateFeedResponse,
-  FeedType,
-  ListFeedResponse,
-} from "@covid/service/feed.service"
 import { useRouter, Router } from "next/router"
 import { SearchOutlined } from "@ant-design/icons"
-import searchService from "@covid/service/search.service"
+import searchService, {
+  FeedType,
+  ListFeedResponse,
+} from "@covid/service/search.service"
 import { useSession } from "next-auth/client"
 import FeedItem from "@covid/components/FeedItem"
 import htmlToString from "@covid/lib/htmlToString"
@@ -32,6 +31,9 @@ const SearchPage: AppPageProps<Props> = (props) => {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<ListFeedResponse | undefined>(data)
   const [timer, setTimer] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+  const [cursor, setCursor] = useState(data?.items[data.items.length - 1].id)
+
   const router = useRouter()
   const { query } = router
 
@@ -71,6 +73,30 @@ const SearchPage: AppPageProps<Props> = (props) => {
     }, 600)
     setTimer(_setTimer)
   }
+
+  const handleInfiniteOnLoad = async () => {
+    try {
+      setLoading(true)
+      console.log(cursor)
+      console.log(query.q)
+      const { data } = await searchService.feedList({ cursor, q: query.q })
+
+      setCursor(data?.items[data.items.length - 1].id)
+
+      setResults({
+        meta: {
+          ...results?.meta,
+        },
+        items: results?.items.concat(data.items),
+      })
+
+      setLoading(true)
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <>
       <Layout>
@@ -89,25 +115,37 @@ const SearchPage: AppPageProps<Props> = (props) => {
               enterButton
               size="large"
             />
-            <List<FeedType>
-              dataSource={results?.items}
-              itemLayout="vertical"
-              size="large"
-              locale={{ emptyText: <></> }}
-              renderItem={(item) => (
-                <List.Item
-                  key={item.id}
-                  style={{ marginBottom: 10, padding: screens.xs ? 0 : 16 }}>
-                  <FeedItem
-                    id={item.id}
-                    title={item.title}
-                    content={htmlToString(item.content)}
-                    avatar={item.author.image || undefined}
-                    createDt={item.created_at}
-                  />
-                </List.Item>
-              )}
-            />
+            <Spin spinning={loading}>
+              <InfiniteScroll
+                initialLoad={false}
+                pageStart={0}
+                loadMore={handleInfiniteOnLoad}
+                hasMore={hasMore}
+                useWindow>
+                <List<FeedType>
+                  dataSource={results?.items}
+                  itemLayout="vertical"
+                  size="large"
+                  locale={{ emptyText: <></> }}
+                  renderItem={(item) => (
+                    <List.Item
+                      key={item.id}
+                      style={{
+                        marginBottom: 10,
+                        padding: screens.xs ? 0 : 16,
+                      }}>
+                      <FeedItem
+                        id={item.id}
+                        title={item.title}
+                        content={htmlToString(item.content)}
+                        avatar={item.author.image || undefined}
+                        createDt={item.created_at}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </InfiniteScroll>
+            </Spin>
           </Col>
         </Row>
       </Layout>

@@ -8,7 +8,9 @@ import { NextApiResponse } from "next"
  * 피드를 검색하여 리스트를 출력합니다.
  */
 const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { cursor, size = "20", authorId, page, q } = req.query
+  const { cursor, size = "5", page, q } = req.query
+
+  console.log(cursor)
 
   const _searchText = q as string
   const _cursor = cursor ? parseInt(cursor as string, 10) : -1
@@ -31,6 +33,10 @@ const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
         ],
       },
     })
+    const _skip = () => {
+      if (_cursor > -1) return 1
+      return _page > -1 ? _page * 10 : undefined
+    }
     const lastFeed = await prisma.feed.findFirst({
       orderBy: {
         id: "desc",
@@ -44,7 +50,7 @@ const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
       orderBy: {
         id: "desc",
       },
-      skip: _page > -1 ? _page * 10 : undefined,
+      skip: _skip(),
       take: parseInt(size as string, 10),
       where: {
         OR: [
@@ -67,6 +73,7 @@ const feedList = async (req: AppApiRequest, res: NextApiResponse) => {
     return res.send({
       meta: {
         totalElements,
+        cursor: _cursor,
       },
       items: feeds,
     })
