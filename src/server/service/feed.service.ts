@@ -34,8 +34,7 @@ const create = async (req: AppApiRequest, res: NextApiResponse) => {
  * 피드 리스트를 출력합니다.
  */
 const list = async (req: AppApiRequest, res: NextApiResponse) => {
-  const { cursor, size = "20", authorId, page } = req.query
-
+  const { cursor, size = "10", authorId, page } = req.query
   const _cursor = cursor ? parseInt(cursor as string, 10) : -1
   const _page = page ? parseInt(page as string, 10) : -1
 
@@ -48,6 +47,11 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       distinct: "id",
     })
 
+    const _skip = () => {
+      if (_cursor > -1) return 1
+      return _page > -1 ? _page * 10 : undefined
+    }
+
     const feeds = await prisma.feed.findMany({
       cursor: {
         id: _cursor < 0 ? lastFeed?.id : _cursor,
@@ -55,7 +59,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       orderBy: {
         id: "desc",
       },
-      skip: _page > -1 ? _page * 10 : undefined,
+      skip: _skip(),
       take: parseInt(size as string, 10),
       where: {
         authorId: parseInt(authorId as string, 10) || undefined,
@@ -79,6 +83,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
     return res.send({
       meta: {
         totalElements,
+        cursor: _cursor,
       },
       items: feeds,
     })
