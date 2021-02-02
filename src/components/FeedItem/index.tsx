@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons"
 import Link from "next/link"
 import dayjs from "dayjs"
+import { parse } from "node-html-parser"
 
 const { Meta } = Card
 
@@ -33,6 +34,7 @@ export type FeedItemProps = {
   avatar?: string
   like?: boolean
   screp?: boolean
+  originContent?: string
   createDt: Date
   onLike?: () => Promise<void> | void
   onUnLike?: () => Promise<void> | void
@@ -132,6 +134,19 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     }
   }
 
+  const getImage = (content: string) => {
+    const doc = parse(content)
+
+    const image = doc.querySelector("img")
+    const src = image?.getAttribute("src")
+
+    if (src) {
+      return <img src={`${src}`} alt={title} />
+    }
+
+    return undefined
+  }
+
   const renderAction = (counter: any) => (Component: JSX.Element) => {
     if (typeof counter === "undefined") {
       return null
@@ -141,6 +156,7 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
 
   return (
     <StyledCard
+      cover={getImage(props.originContent!)}
       actions={[
         renderAction(countscreps)(
           <IconText

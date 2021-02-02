@@ -232,6 +232,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
                         id={item.id}
                         title={item.title}
                         content={htmlToString(item.content)}
+                        originContent={item.content}
                         avatar={item.author.image || undefined}
                         countlikes={item.likes}
                         countscreps={item.screps}
