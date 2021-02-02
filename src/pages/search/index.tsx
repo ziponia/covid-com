@@ -32,7 +32,7 @@ const SearchPage: AppPageProps<Props> = (props) => {
   const [results, setResults] = useState<ListFeedResponse | undefined>(data)
   const [timer, setTimer] = useState(0)
   const [hasMore, setHasMore] = useState(true)
-  const [cursor, setCursor] = useState()
+  const [cursor, setCursor] = useState<number>()
 
   const router = useRouter()
   const { query } = router
@@ -84,7 +84,8 @@ const SearchPage: AppPageProps<Props> = (props) => {
       const { data } = await searchService.feedList({ cursor, q })
 
       if (data?.items.length > 0) {
-        setCursor(data?.items[data.items.length - 1].id)
+        const { id } = data?.items[data.items.length - 1]
+        setCursor(id)
       }
 
       setResults({
