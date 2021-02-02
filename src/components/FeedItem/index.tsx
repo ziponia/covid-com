@@ -141,7 +141,13 @@ const FeedItem: React.FC<FeedItemProps> = (props) => {
     const src = image?.getAttribute("src")
 
     if (src) {
-      return <img src={`${src}`} alt={title} />
+      return (
+        <img
+          src={`${src}`}
+          alt={title}
+          style={{ maxHeight: 240, objectFit: "cover" }}
+        />
+      )
     }
 
     return undefined
