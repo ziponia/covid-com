@@ -7,6 +7,8 @@ import dayjs from "dayjs"
 import fs from "fs"
 
 const upload = async (req: AppApiRequest, res: NextApiResponse) => {
+  console.log(req.user)
+  console.log(req.files)
   if (!req.user) {
     return res.status(401).send({
       message: "required authentication",
