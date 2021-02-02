@@ -17,7 +17,8 @@ export type FeedType = IFeed & {
 
 export interface ListFeedResponse {
   meta: {
-    totalElements: number
+    totalElements?: number
+    cursor?: number
   }
   items: FeedType[]
 }

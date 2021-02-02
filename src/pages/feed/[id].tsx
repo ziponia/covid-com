@@ -45,6 +45,9 @@ const StyledLayout = styled(Layout)`
       justify-content: flex-end;
     }
   }
+  .content img {
+    max-width: 100%;
+  }
 `
 
 const StyledDescriptions = styled(Descriptions)`
@@ -245,7 +248,10 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
 
         <Divider />
         <Layout.Content>
-          <div dangerouslySetInnerHTML={{ __html: feed.content }} />
+          <div
+            className="content"
+            dangerouslySetInnerHTML={{ __html: feed.content }}
+          />
         </Layout.Content>
         <Divider />
         <Comment feedId={feed.id} />

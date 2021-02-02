@@ -9,7 +9,10 @@ import {
   PageHeader,
   Row,
   Grid,
+  Spin,
 } from "antd"
+import InfiniteScroll from "react-infinite-scroller"
+
 import { BsPencil } from "react-icons/bs"
 import { NextPageContext } from "next"
 import dynamic from "next/dynamic"
@@ -40,6 +43,9 @@ const IndexPage: AppPageProps<Props> = (props) => {
   const { pageTitle, pageSubTitle, data, ...rest } = props
 
   const [feeds, setFeeds] = useState(data)
+  const [loading, setLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [cursor, setCursor] = useState(data.items[data.items.length - 1].id)
 
   const [affixed, setAffixed] = useState(false)
   const screens = useBreakpoint()
@@ -146,6 +152,27 @@ const IndexPage: AppPageProps<Props> = (props) => {
 
   const onPostWriteVisiableChange = (show: boolean) => {}
 
+  const handleInfiniteOnLoad = async () => {
+    try {
+      setLoading(true)
+      const { data } = await feedService.list({ cursor })
+      setCursor(data.items[data.items.length - 1].id)
+
+      setFeeds({
+        meta: {
+          ...feeds.meta,
+        },
+        items: feeds.items.concat(data.items),
+      })
+
+      setLoading(true)
+    } catch (e) {
+      console.log("error", e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <>
       <Layout>
@@ -183,38 +210,51 @@ const IndexPage: AppPageProps<Props> = (props) => {
             xs={24}
             sm={!screens.md ? 24 : 12}
             offset={screens.xs || !screens.md ? 0 : 6}>
-            <List<FeedType>
-              dataSource={feeds?.items}
-              itemLayout="vertical"
-              size="large"
-              renderItem={(item) => (
-                <List.Item
-                  key={item.id}
-                  style={{ marginBottom: 10, padding: screens.xs ? 0 : 16 }}>
-                  <FeedItem
-                    id={item.id}
-                    title={item.title}
-                    content={htmlToString(item.content)}
-                    avatar={item.author.image || undefined}
-                    countlikes={item.likes}
-                    countscreps={item.screps}
-                    like={item.Likes.length > 0}
-                    screp={item.Screps.length > 0}
-                    createDt={item.created_at}
-                    onLike={() => _onLikeFeed(item.id)}
-                    onUnLike={() => {
-                      if (item.Likes.length === 0) return
-                      return _onUnLikeFeed(item.Likes[0].id, item.id)
-                    }}
-                    onScrep={() => _onScrepFeed(item.id)}
-                    onUnScrep={() => {
-                      if (item.Screps.length === 0) return
-                      return _onUnScrepFeed(item.Screps[0].id, item.id)
-                    }}
-                  />
-                </List.Item>
-              )}
-            />
+            <Spin spinning={loading}>
+              <InfiniteScroll
+                initialLoad={false}
+                pageStart={0}
+                loadMore={handleInfiniteOnLoad}
+                hasMore={hasMore}
+                useWindow>
+                <List<FeedType>
+                  dataSource={feeds?.items}
+                  itemLayout="vertical"
+                  size="large"
+                  renderItem={(item) => (
+                    <List.Item
+                      key={item.id}
+                      style={{
+                        marginBottom: 10,
+                        padding: screens.xs ? 0 : 16,
+                      }}>
+                      <FeedItem
+                        id={item.id}
+                        title={item.title}
+                        content={htmlToString(item.content)}
+                        originContent={item.content}
+                        avatar={item.author.image || undefined}
+                        countlikes={item.likes}
+                        countscreps={item.screps}
+                        like={item.Likes.length > 0}
+                        screp={item.Screps.length > 0}
+                        createDt={item.created_at}
+                        onLike={() => _onLikeFeed(item.id)}
+                        onUnLike={() => {
+                          if (item.Likes.length === 0) return
+                          return _onUnLikeFeed(item.Likes[0].id, item.id)
+                        }}
+                        onScrep={() => _onScrepFeed(item.id)}
+                        onUnScrep={() => {
+                          if (item.Screps.length === 0) return
+                          return _onUnScrepFeed(item.Screps[0].id, item.id)
+                        }}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </InfiniteScroll>
+            </Spin>
           </Col>
         </Row>
       </Layout>
