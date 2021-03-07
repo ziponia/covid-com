@@ -39,6 +39,11 @@ model users {
   image          String?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @default(now())
+  Feed           Feed[]
+  Likes          Likes[]
+  Screps         Screps[]
+  Agree          Agree[]
+  Comment        Comment[]
 }
 
 model verification_requests {
@@ -51,60 +56,64 @@ model verification_requests {
 }
 
 model Feed {
-  id            Int @id @default(autoincrement())
-  title         String
-  content       String
-  author        users @relation(fields: [authorId], references: [id])
-  authorId      Int
-  screps        Int @default(0)
-  likes         Int @default(0)
-  comments      Int @default(0)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @default(now())
-  agrees        Int @default(0)
-  disAgrees     Int @default(0)
+  id         Int       @id @default(autoincrement())
+  title      String
+  content    String
+  author     users     @relation(fields: [authorId], references: [id])
+  authorId   Int
+  screps     Int       @default(0)
+  likes      Int       @default(0)
+  comments   Int       @default(0)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  agrees     Int       @default(0)
+  disAgrees  Int       @default(0)
+  Likes      Likes[]
+  Screps     Screps[]
+  Agree      Agree[]
+  Comment    Comment[]
 }
 
 model Likes {
-  id            String @id @default(uuid())
-  author        users @relation(fields: [authorId], references: [id])
-  authorId      Int
-  feed          Feed @relation(fields: [feedId], references: [id])
-  feedId        Int
-  created_at    DateTime @default(now())
+  id         String   @id @default(uuid())
+  author     users    @relation(fields: [authorId], references: [id])
+  authorId   Int
+  feed       Feed     @relation(fields: [feedId], references: [id])
+  feedId     Int
+  created_at DateTime @default(now())
 
   @@unique([authorId, feedId])
 }
 
 model Screps {
-  id            String @id @default(uuid())
-  author        users @relation(fields: [authorId], references: [id])
-  authorId      Int
-  feed          Feed @relation(fields: [feedId], references: [id])
-  feedId        Int
-  created_at    DateTime @default(now())
+  id         String   @id @default(uuid())
+  author     users    @relation(fields: [authorId], references: [id])
+  authorId   Int
+  feed       Feed     @relation(fields: [feedId], references: [id])
+  feedId     Int
+  created_at DateTime @default(now())
 }
 
 model Agree {
-  id            String @id @default(uuid())
-  user          users @relation(fields: [userId], references: [id])
-  userId        Int
-  feed          Feed @relation(fields: [feedId], references: [id])
-  feedId        Int
-  action        AgreeAction
-  created_at    DateTime @default(now())
-  updated_at    DateTime @default(now())
+  id         String      @id @default(uuid())
+  user       users       @relation(fields: [userId], references: [id])
+  userId     Int
+  feed       Feed        @relation(fields: [feedId], references: [id])
+  feedId     Int
+  action     AgreeAction
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now())
 }
 
 model Comment {
-  id            String @id @default(uuid())
-  content       String
-  user          users @relation(fields: [userId], references: [id])
-  userId        Int
-  feed          Feed @relation(fields: [feedId], references: [id])
-  feedId        Int
-  created_at    DateTime @default(now())
-  updated_at    DateTime @default(now())
+  id         String   @id @default(uuid())
+  content    String
+  user       users    @relation(fields: [userId], references: [id])
+  userId     Int
+  feed       Feed     @relation(fields: [feedId], references: [id])
+  feedId     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
 }
 
 enum AgreeAction {

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useMemo, useState } from "react"
 import {
   Affix,
   BackTop,
@@ -45,7 +45,14 @@ const IndexPage: AppPageProps<Props> = (props) => {
   const [feeds, setFeeds] = useState(data)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [cursor, setCursor] = useState(data.items[data.items.length - 1].id)
+
+  const _cursor = useMemo(() => {
+    if (!data || !data.items) {
+      return -1
+    }
+    return data.items[data.items.length - 1].id
+  }, [])
+  const [cursor, setCursor] = useState(_cursor)
 
   const [affixed, setAffixed] = useState(false)
   const screens = useBreakpoint()
