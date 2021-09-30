@@ -1,8 +1,9 @@
 import { PrismaClient, users } from "@prisma/client"
-import { NextApiResponse } from "next"
-import NextAuth, { InitOptions } from "next-auth"
+import { NextApiRequest, NextApiResponse } from "next"
+import NextAuth, { NextAuthOptions } from "next-auth"
+import Providers from "next-auth/providers"
 import Adapters from "next-auth/adapters"
-import { NextApiRequest } from "next-auth/_utils"
+
 // import prisma from "@covid/lib/prisma"
 
 let prisma
@@ -16,33 +17,13 @@ if (process.env.NODE_ENV === "production") {
   prisma = (global as any).prisma
 }
 
-const options: InitOptions = {
+const options: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
-    {
-      id: "kakao",
-      name: "Kakao",
-      type: "oauth",
-      version: "2.0",
-      // scope:
-      //   "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",
-      params: { grant_type: "authorization_code" },
-      accessTokenUrl: "https://kauth.kakao.com/oauth/token",
-      // requestTokenUrl: "https://accounts.google.com/o/oauth2/auth",
-      authorizationUrl:
-        "https://kauth.kakao.com/oauth/authorize?response_type=code",
-      profileUrl: "https://kapi.kakao.com/v2/user/me",
-      profile: (profile: any) => {
-        return {
-          id: profile.id,
-          name: profile.kakao_account.profile.nickname,
-          // email: profile.kakao_account.email,
-          image: profile.kakao_account.profile.profile_image_url,
-        }
-      },
-      clientId: process.env.KAKAO_CLIENT_ID,
-      clientSecret: process.env.KAKAO_CLIENT_SECRET,
-    },
+    Providers.Kakao({
+      clientId: process.env.NEXT_AUTH_KAKAO_CLIENET_ID,
+      clientSecret: process.env.NEXT_AUTH_KAKAO_CLIENET_SECRET,
+    }),
   ],
 
   // A database is optional, but required to persist accounts in a database

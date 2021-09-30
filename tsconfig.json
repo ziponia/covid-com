@@ -15,7 +15,7 @@
     "noUnusedParameters": false,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
+    "strict": false,
     "target": "esnext",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

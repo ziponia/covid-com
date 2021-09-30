@@ -1,19 +1,6 @@
 /// <reference types="next" />
 /// <reference types="next/types/global" />
-/// <reference types="./src/index" />
+/// <reference types="next/image-types/global" />
 
-import "next-auth"
-
-declare module "next-auth/client" {
-  export interface Session {
-    user: {
-      createdAt?: string
-      updatedAt?: string
-      email?: string
-      emailVerified?: string
-      id: number
-      image?: string
-      name?: string
-    }
-  }
-}
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.

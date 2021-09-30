@@ -45,7 +45,7 @@ const IndexPage: AppPageProps<Props> = (props) => {
   const [feeds, setFeeds] = useState(data)
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [cursor, setCursor] = useState(data.items[data.items.length - 1].id)
+  const [cursor, setCursor] = useState(data.items[data.items.length - 1]?.id)
 
   const [affixed, setAffixed] = useState(false)
   const screens = useBreakpoint()

@@ -52,10 +52,34 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       return _page > -1 ? _page * 10 : undefined
     }
 
+    const _inlcude: any = {
+      author: true,
+    }
+
+    if (req.user?.id) {
+      _inlcude.Likes = {
+        distinct: "id",
+        where: {
+          authorId: req.user?.id,
+        },
+      }
+
+      _inlcude.Screps = {
+        distinct: "id",
+        where: {
+          authorId: req.user?.id,
+        },
+      }
+    }
+
     const feeds = await prisma.feed.findMany({
-      cursor: {
-        id: _cursor < 0 ? lastFeed?.id : _cursor,
-      },
+      cursor:
+        totalElements > 0
+          ? {
+              id: _cursor < 0 ? lastFeed?.id : _cursor,
+            }
+          : undefined,
+      // cursor: undefined,
       orderBy: {
         id: "desc",
       },
@@ -64,21 +88,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       where: {
         authorId: parseInt(authorId as string, 10) || undefined,
       },
-      include: {
-        author: true,
-        Likes: {
-          distinct: "id",
-          where: {
-            authorId: req.user?.id,
-          },
-        },
-        Screps: {
-          distinct: "id",
-          where: {
-            authorId: req.user?.id,
-          },
-        },
-      },
+      include: _inlcude,
     })
     return res.send({
       meta: {
@@ -88,6 +98,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       items: feeds,
     })
   } catch (e) {
+    console.log("feed.service - error")
     console.error(e)
     return res.send(e)
   }
