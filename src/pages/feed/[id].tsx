@@ -174,7 +174,7 @@ const FeedDetailPage: AppPageProps<Props> = (props) => {
     }
   }
 
-  const isPermission = session && session.user.id === feed.authorId
+  const isPermission = session && (session.user as any)?.id === feed.authorId
 
   return (
     <>

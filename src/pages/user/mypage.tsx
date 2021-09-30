@@ -4,7 +4,6 @@ import {
   useSession,
   signOut,
   signIn,
-  Session,
   getSession,
 } from "next-auth/client"
 import Link from "next/link"
@@ -55,6 +54,7 @@ import MyPageTemplate from "@covid/templates/MyPageTemplate"
 import DefaultModal from "@covid/components/Modal"
 import FileUpload from "@covid/components/FileUpload"
 import { type } from "os"
+import { Session } from "next-auth"
 
 const { useBreakpoint } = Grid
 const { TabPane } = Tabs
@@ -227,7 +227,7 @@ const MyPage: AppPageProps<Props> = (props) => {
     try {
       setLoadingMyFeed(true)
       const { data } = await feedService.list({
-        authorId: session?.user.id,
+        authorId: (session?.user as any).id,
         page,
       })
       setMyFeeds(data)
@@ -239,7 +239,7 @@ const MyPage: AppPageProps<Props> = (props) => {
   const 나의_코멘트_리스트 = async (page: number) => {
     try {
       const { data } = await commentService.list({
-        userId: session?.user.id,
+        userId: (session?.user as any).id,
         _includeFeed: true,
       })
       setMyComments(data)
@@ -250,7 +250,7 @@ const MyPage: AppPageProps<Props> = (props) => {
   const 나의_스크랩_리스트 = async (page: number) => {
     try {
       const { data } = await feedService.scrapList({
-        authorId: session?.user.id,
+        authorId: (session?.user as any).id,
         _includeFeed: true,
       })
       setMyScraps(data)

@@ -128,7 +128,7 @@ const Comment: React.FC<CommentProps> = (props) => {
         total={data?.meta.totalElements || 0}
         comments={data?.items || []}
         loading={commentLoading}
-        currentUserId={session?.user.id}
+        currentUserId={(session?.user as any)?.id}
         feedId={props.feedId}
         onChangePage={onPageChange}
         pagesize={req.size}

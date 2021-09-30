@@ -8,9 +8,10 @@ import TitleInput from "@covid/components/Editor/TitleInput"
 import { useRouter } from "next/router"
 import { ArrowLeftOutlined, CheckOutlined } from "@ant-design/icons"
 import feedService, { GetFeedResponse } from "@covid/service/feed.service"
-import { getSession, Session } from "next-auth/client"
+import { getSession } from "next-auth/client"
 import Joi, { ValidationError } from "joi"
 import htmlToString from "@covid/lib/htmlToString"
+import { Session } from "next-auth"
 
 const Editor = dynamic(() => import("@covid/components/Editor/index"), {
   ssr: false,
