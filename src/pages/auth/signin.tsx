@@ -1,22 +1,16 @@
-import React from "react"
-import { providers, signIn } from "next-auth/client"
-import { Card, Form, Input, Button, Checkbox, Col, Row, Grid } from "antd"
-import { UserOutlined, LockOutlined, BorderOutlined } from "@ant-design/icons"
-import { useRouter } from "next/router"
-
-import Link from "next/link"
-import { AppPageProps } from "../../_app.interface"
-import SignPageTemplate from "../../templates/SignPageTemplate"
-
+import { Button, Card, Col, Grid, Row } from "antd"
 import "antd/dist/antd.css"
+import { signIn, getProviders } from "next-auth/react"
+import { useRouter } from "next/router"
+import React from "react"
+import SignPageTemplate from "../../templates/SignPageTemplate"
+import { AppPageProps } from "../../_app.interface"
 
 const { useBreakpoint } = Grid
 
 type Props = {}
 
 const SignIn: AppPageProps<Props> = (props) => {
-  const { providers } = props
-
   const { query } = useRouter()
   const screen = useBreakpoint()
 
@@ -135,8 +129,7 @@ SignIn.Layout = SignPageTemplate
 
 SignIn.getInitialProps = async (context) => {
   return {
-    // @ts-ignore
-    providers: await providers(),
+    providers: await getProviders(),
     sidebar: false,
   }
 }

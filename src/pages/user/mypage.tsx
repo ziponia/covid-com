@@ -1,60 +1,50 @@
-import React, { useState, useEffect } from "react"
 import {
-  providers,
-  useSession,
-  signOut,
-  signIn,
-  getSession,
-} from "next-auth/client"
-import Link from "next/link"
-import {
-  Avatar,
-  Row,
-  Col,
-  Card,
-  Button,
-  Tabs,
-  Grid,
-  List,
-  Divider,
-  Input,
-  AutoComplete,
-  Skeleton,
-  Badge,
-  Modal,
-} from "antd"
-import {
-  LockOutlined,
+  CameraOutlined,
   FieldTimeOutlined,
   HomeOutlined,
-  CameraOutlined,
+  LockOutlined,
 } from "@ant-design/icons"
-
-import styled from "styled-components"
-import { AppLayoutProps, AppPageProps } from "@covid/_app.interface"
-import { useRouter } from "next/router"
-import feedService, {
-  ListFeedResponse,
-  ListScrapResponse,
-  ScrapWithUser,
-} from "@covid/service/feed.service"
+import FileUpload from "@covid/components/FileUpload"
+import DefaultModal from "@covid/components/Modal"
 import htmlToString from "@covid/lib/htmlToString"
 import commentService, {
   ListCommentResponse,
 } from "@covid/service/comment.service"
-import dayjs from "dayjs"
-import AWS from "aws-sdk"
-import { UploadChangeParam, UploadFile } from "antd/lib/upload/interface"
-import userService, {
-  UpdateUserInfoResponse,
-} from "@covid/service/user.service"
-import fileService from "@covid/service/file.service"
-import { AnyARecord } from "dns"
+import feedService, {
+  ListFeedResponse,
+  ListScrapResponse,
+} from "@covid/service/feed.service"
+import userService from "@covid/service/user.service"
 import MyPageTemplate from "@covid/templates/MyPageTemplate"
-import DefaultModal from "@covid/components/Modal"
-import FileUpload from "@covid/components/FileUpload"
-import { type } from "os"
+import { AppPageProps } from "@covid/_app.interface"
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  Col,
+  Divider,
+  Grid,
+  Input,
+  List,
+  Modal,
+  Row,
+  Skeleton,
+  Tabs,
+} from "antd"
+import { UploadChangeParam } from "antd/lib/upload/interface"
+import dayjs from "dayjs"
 import { Session } from "next-auth"
+import {
+  getProviders,
+  getSession,
+  signIn,
+  signOut,
+  useSession,
+} from "next-auth/react"
+import Link from "next/link"
+import React, { useEffect, useState } from "react"
+import styled from "styled-components"
 
 const { useBreakpoint } = Grid
 const { TabPane } = Tabs
@@ -125,7 +115,7 @@ type Props = {
 
 const MyPage: AppPageProps<Props> = (props) => {
   const screens = useBreakpoint()
-  const [session] = useSession()
+  const { data: session } = useSession()
   const [loading, setLoading] = useState(false)
   const [visible, setVisible] = useState(false)
 
@@ -551,8 +541,7 @@ MyPage.Layout = MyPageTemplate
 MyPage.getInitialProps = async (ctx) => {
   const session = await getSession(ctx)
   return {
-    // @ts-ignore
-    providers: await providers(),
+    providers: await getProviders(),
     sidebar: false,
     session,
   }

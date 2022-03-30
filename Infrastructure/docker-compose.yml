@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  covid-com:
+    container_name: covid-com
+    platform: linux/amd64
+    restart: always
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: test
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test
+    ports:
+      - "3316:3306"
+    volumes:
+      - ./.data:/var/lib/mysql

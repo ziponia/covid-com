@@ -56,7 +56,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
     feedId: Joi.number(),
     size: Joi.number().default(20),
     page: Joi.number().default(1),
-    userId: Joi.number(),
+    userId: Joi.string(),
     _includeFeed: Joi.bool(),
   })
 

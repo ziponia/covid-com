@@ -1,6 +1,6 @@
 import React from "react"
 import { NextApiRequest, NextComponentType, NextPageContext } from "next"
-import { users as User } from "@prisma/client"
+import { User } from "@prisma/client"
 import { Files } from "formidable"
 
 export type AppLayoutProps = {

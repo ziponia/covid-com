@@ -14,7 +14,6 @@ import searchService, {
   FeedType,
   ListFeedResponse,
 } from "@covid/service/search.service"
-import { useSession } from "next-auth/client"
 import FeedItem from "@covid/components/FeedItem"
 import htmlToString from "@covid/lib/htmlToString"
 

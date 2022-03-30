@@ -1,8 +1,8 @@
 import prisma from "@covid/server/prisma"
 import { NextApiResponse } from "next"
-import { getSession } from "next-auth/client"
+import { getSession } from "next-auth/react"
 import { NextHandler } from "next-connect"
-import { users } from "@prisma/client"
+import { User } from "@prisma/client"
 import { AppApiRequest } from "@covid/_app.interface"
 
 const userMiddleware = async (
@@ -12,10 +12,10 @@ const userMiddleware = async (
 ) => {
   const session = await getSession({ req })
 
-  let user: users | null = null
+  let user: User | null = null
 
   if (session) {
-    user = await prisma.users.findFirst({
+    user = await prisma.user.findFirst({
       where: {
         id: (session.user as any).id,
       },

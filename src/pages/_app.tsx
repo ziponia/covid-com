@@ -6,7 +6,7 @@ import {
 } from "@covid/_app.interface"
 import "antd/dist/antd.css"
 import { NextComponentType } from "next"
-import { Provider as AuthProvider } from "next-auth/client"
+import { SessionProvider } from "next-auth/react"
 import React from "react"
 import { RecoilRoot } from "recoil"
 import "../styles/global.scss"
@@ -18,13 +18,13 @@ const App: NextComponentType<AppPageProps> = ({
   const Layout = Component.Layout || PageLayout
 
   return (
-    <AuthProvider session={pageProps.session}>
+    <SessionProvider session={pageProps.session}>
       <RecoilRoot>
         <Layout {...pageProps}>
           <Component {...pageProps} />
         </Layout>
       </RecoilRoot>
-    </AuthProvider>
+    </SessionProvider>
   )
 }
 

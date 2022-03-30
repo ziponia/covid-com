@@ -1,5 +1,5 @@
 import $http from "@covid/lib/client"
-import { Comment, Feed, users as User } from "@prisma/client"
+import { Comment, Feed, User } from "@prisma/client"
 import { AxiosResponse } from "axios"
 
 export interface ListCommentRequest {

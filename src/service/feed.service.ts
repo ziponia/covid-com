@@ -1,7 +1,7 @@
 import $http from "@covid/lib/client"
 import {
   Feed as IFeed,
-  users as IUser,
+  User as IUser,
   Likes,
   Screps,
   Feed,

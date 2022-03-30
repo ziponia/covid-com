@@ -1,7 +1,7 @@
 import prisma from "@covid/server/prisma"
 
-const findUserById = async (id: number) => {
-  return prisma.users.findFirst({
+const findUserById = async (id: string) => {
+  return prisma.user.findFirst({
     where: {
       id,
     },

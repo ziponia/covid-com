@@ -3,7 +3,7 @@ import { Avatar, Button, Layout, Menu, Tooltip } from "antd"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { FiPower } from "react-icons/fi"
-import { signIn, useSession, signOut } from "next-auth/client"
+import { signIn, useSession } from "next-auth/react"
 
 import { AppLayoutProps } from "../_app.interface"
 
@@ -11,7 +11,7 @@ type Props = AppLayoutProps & {}
 
 const PageLayout: React.FC<Props> = (props) => {
   const { children, pageTitle, pageSubTitle, header } = props
-  const [session, loading] = useSession()
+  const { data: session } = useSession()
 
   // const _signOut = () => {
   //   signOut({

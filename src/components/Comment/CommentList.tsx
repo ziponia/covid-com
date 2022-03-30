@@ -12,7 +12,7 @@ export type CommentListProps = {
   pagesize?: number
   loading?: boolean
   feedId: number
-  currentUserId?: number
+  currentUserId?: string
   onChangePage?: (page: number) => void
   onUpdateComplete?: (commentId: string, content: string) => void
   onDeleteComplete?: (commentId: string) => void

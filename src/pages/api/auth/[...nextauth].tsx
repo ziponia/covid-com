@@ -1,8 +1,9 @@
-import { PrismaClient, users } from "@prisma/client"
+import { PrismaClient, User } from "@prisma/client"
 import { NextApiRequest, NextApiResponse } from "next"
 import NextAuth, { NextAuthOptions } from "next-auth"
-import Providers from "next-auth/providers"
+import KakaoProvider from "next-auth/providers/kakao"
 import Adapters from "next-auth/adapters"
+import { PrismaAdapter } from "@next-auth/prisma-adapter"
 
 // import prisma from "@covid/lib/prisma"
 
@@ -20,14 +21,15 @@ if (process.env.NODE_ENV === "production") {
 const options: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
-    Providers.Kakao({
-      clientId: process.env.NEXT_AUTH_KAKAO_CLIENET_ID,
-      clientSecret: process.env.NEXT_AUTH_KAKAO_CLIENET_SECRET,
+    KakaoProvider({
+      clientId: process.env.KAKAO_CLIENT_ID,
+      clientSecret: process.env.KAKAO_CLIENT_SECRET,
     }),
   ],
 
   // A database is optional, but required to persist accounts in a database
-  database: process.env.DATABASE_URL,
+  adapter: PrismaAdapter(prisma),
+
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
@@ -42,10 +44,10 @@ const options: NextAuthOptions = {
     secret: process.env.JWT_SECRET,
   },
   callbacks: {
-    jwt: async (token, user, account, profile, isNewUser) => {
+    jwt: async ({ token, user, account, profile, isNewUser }) => {
       return Promise.resolve(token)
     },
-    session: async (session, user) => {
+    session: async ({ session, user }) => {
       session.user = {
         ...session.user,
         ...user,

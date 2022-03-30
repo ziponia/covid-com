@@ -86,7 +86,7 @@ const list = async (req: AppApiRequest, res: NextApiResponse) => {
       skip: _skip(),
       take: parseInt(size as string, 10),
       where: {
-        authorId: parseInt(authorId as string, 10) || undefined,
+        authorId: (authorId as string) || undefined,
       },
       include: _inlcude,
     })
@@ -123,12 +123,12 @@ const get = async (req: AppApiRequest, res: NextApiResponse) => {
       author: true,
       Likes: {
         where: {
-          authorId: logged ? user?.id : -1,
+          authorId: logged ? user?.id : undefined,
         },
       },
       Screps: {
         where: {
-          authorId: logged ? user?.id : -1,
+          authorId: logged ? user?.id : undefined,
         },
       },
     },
@@ -437,7 +437,7 @@ const scrapList = async (req: AppApiRequest, res: NextApiResponse) => {
     feedId: Joi.number(),
     size: Joi.number().default(20),
     page: Joi.number().default(1),
-    authorId: Joi.number(),
+    authorId: Joi.string(),
     _includeFeed: Joi.bool(),
   })
 

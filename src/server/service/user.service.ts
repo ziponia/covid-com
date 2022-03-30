@@ -16,7 +16,7 @@ const update = async (req: AppApiRequest, res: NextApiResponse) => {
 
   const { name } = req.body
 
-  const updateUserInfo = await prisma.users.update({
+  const updateUserInfo = await prisma.user.update({
     where: {
       id: req.user?.id,
     },
@@ -37,7 +37,7 @@ const updateUserImage = async (req: AppApiRequest, res: NextApiResponse) => {
 
   const { image } = req.body
 
-  const updateImage = await prisma.users.update({
+  const updateImage = await prisma.user.update({
     where: {
       id: req.user?.id,
     },

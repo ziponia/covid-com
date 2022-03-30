@@ -15,7 +15,7 @@ import {
 } from "antd"
 import styled from "styled-components"
 import { useRouter } from "next/router"
-import { useSession } from "next-auth/client"
+import { useSession } from "next-auth/react"
 import Head from "next/head"
 import Comment from "@covid/containers/Comment"
 import dayjs from "dayjs"
@@ -66,7 +66,7 @@ type Props = {
 
 const FeedDetailPage: AppPageProps<Props> = (props) => {
   const router = useRouter()
-  const [session] = useSession()
+  const { data: session } = useSession()
   const [feed, setFeed] = useState<GetFeedResponse | undefined>(props.feed)
 
   const [deleteModal, setDeleteModal] = useState(false)

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react"
 import CommentInput from "@covid/components/Comment/CommentInput"
 import CommentList from "@covid/components/Comment/CommentList"
-import { useSession } from "next-auth/client"
+import { useSession } from "next-auth/react"
 import { Tooltip } from "antd"
 import commentService, {
   ListCommentRequest,
@@ -49,7 +49,7 @@ export type CommentProps = {
 }
 
 const Comment: React.FC<CommentProps> = (props) => {
-  const [session] = useSession()
+  const { data: session } = useSession()
 
   const [comment, setComment] = useState("")
   const [req, setReq] = useState({
@@ -60,7 +60,11 @@ const Comment: React.FC<CommentProps> = (props) => {
   const [loading, setLoading] = useState(false)
   const [tooltip, showTooltip] = useState(false)
 
-  const { data, loading: commentLoading, refresh } = useComments({
+  const {
+    data,
+    loading: commentLoading,
+    refresh,
+  } = useComments({
     feedId: props.feedId,
     page: req.page,
     size: req.size,

@@ -6,7 +6,10 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "lib": ["dom", "es2017"],
+    "lib": [
+      "dom",
+      "es2017"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -21,9 +24,18 @@
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
-      "@covid/*": ["./src/*"]
-    }
+      "@covid/*": [
+        "./src/*"
+      ]
+    },
+    "incremental": true
   },
-  "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx", "src/pages/api/auth/signin.jsx"]
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "src/pages/api/auth/signin.jsx"
+  ]
 }

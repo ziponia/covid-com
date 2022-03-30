@@ -3,47 +3,61 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
 }
 
-model accounts {
-  id                   Int       @id @default(autoincrement())
-  compound_id          String
-  user_id              Int
-  provider_type        String
-  provider_id          String
-  provider_account_id  String
-  refresh_token        String?
-  access_token         String?
-  access_token_expires DateTime?
-  created_at           DateTime  @default(now())
-  updated_at           DateTime  @default(now())
+model Account {
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  refresh_token_expires_in Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
-model sessions {
-  id            Int      @id @default(autoincrement())
-  user_id       Int
-  expires       DateTime
-  session_token String
-  access_token  String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @default(now())
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model users {
-  id             Int       @id @default(autoincrement())
-  name           String?
-  email          String?
-  email_verified DateTime?
-  image          String?
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @default(now())
-  Feed           Feed[]
-  Likes          Likes[]
-  Screps         Screps[]
-  Agree          Agree[]
-  Comment        Comment[]
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now())
+  Feed          Feed[]
+  Likes         Likes[]
+  Screps        Screps[]
+  Agree         Agree[]
+  Comment       Comment[]
 }
 
 model verification_requests {
@@ -59,8 +73,8 @@ model Feed {
   id         Int       @id @default(autoincrement())
   title      String
   content    String
-  author     users     @relation(fields: [authorId], references: [id])
-  authorId   Int
+  author     User      @relation(fields: [authorId], references: [id])
+  authorId   String
   screps     Int       @default(0)
   likes      Int       @default(0)
   comments   Int       @default(0)
@@ -76,8 +90,8 @@ model Feed {
 
 model Likes {
   id         String   @id @default(uuid())
-  author     users    @relation(fields: [authorId], references: [id])
-  authorId   Int
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
   feed       Feed     @relation(fields: [feedId], references: [id])
   feedId     Int
   created_at DateTime @default(now())
@@ -87,8 +101,8 @@ model Likes {
 
 model Screps {
   id         String   @id @default(uuid())
-  author     users    @relation(fields: [authorId], references: [id])
-  authorId   Int
+  author     User     @relation(fields: [authorId], references: [id])
+  authorId   String
   feed       Feed     @relation(fields: [feedId], references: [id])
   feedId     Int
   created_at DateTime @default(now())
@@ -96,8 +110,8 @@ model Screps {
 
 model Agree {
   id         String      @id @default(uuid())
-  user       users       @relation(fields: [userId], references: [id])
-  userId     Int
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String
   feed       Feed        @relation(fields: [feedId], references: [id])
   feedId     Int
   action     AgreeAction
@@ -108,8 +122,8 @@ model Agree {
 model Comment {
   id         String   @id @default(uuid())
   content    String
-  user       users    @relation(fields: [userId], references: [id])
-  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
   feed       Feed     @relation(fields: [feedId], references: [id])
   feedId     Int
   created_at DateTime @default(now())
